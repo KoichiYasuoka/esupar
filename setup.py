@@ -1,0 +1,36 @@
+import os,setuptools
+with open("README.md","r",encoding="utf-8") as r:
+  long_description=r.read()
+URL="https://github.com/KoichiYasuoka/esupar"
+
+setuptools.setup(
+  name="esupar",
+  version="0.5.0",
+  description="Tokenizer POS-tagger and Dependency-parser with BERT/RoBERTa models",
+  long_description=long_description,
+  long_description_content_type="text/markdown",
+  url=URL,
+  author="Koichi Yasuoka",
+  author_email="yasuoka@kanji.zinbun.kyoto-u.ac.jp",
+  license="MIT",
+  keywords="NLP Japanese Chinese Thai",
+  packages=setuptools.find_packages(),
+  install_requires=[
+    "supar>=1.1.2",
+    "deplacy>=2.0.1"
+  ],
+  python_requires=">=3.7",
+  classifiers=[
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Topic :: Text Processing :: Linguistic",
+    "Natural Language :: Japanese"
+    "Natural Language :: Chinese"
+    "Natural Language :: Thai"
+  ],
+  project_urls={
+    "Source":URL,
+    "Tracker":URL+"/issues",
+  }
+)
