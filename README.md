@@ -42,7 +42,7 @@ Tokenizer, POS-tagger, and dependency-parser with [Transformers](https://hugging
 た   AUX   <╝           aux(動詞補助成分)
 ```
 
-`esupar.load(model)` loads a natural language processor pipeline. Available `model` options are:
+`esupar.load(model)` loads a natural language processor pipeline, working on [Universal Dependencies](https://universaldependencies.org/format.html). Available `model` options are:
 
 * `model="ja"` Japanese model [bert-base-japanese-upos](https://huggingface.co/KoichiYasuoka/bert-base-japanese-upos) (default)
 * `model="zh"` Chinese model [chinese-bert-wwm-ext-upos](https://huggingface.co/KoichiYasuoka/chinese-bert-wwm-ext-upos)
