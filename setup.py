@@ -24,10 +24,11 @@ setuptools.setup(
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
-    "Topic :: Text Processing :: Linguistic",
     "Natural Language :: Japanese",
-    "Natural Language :: Chinese",
-    "Natural Language :: Thai"
+    "Natural Language :: Chinese (Simplified)",
+    "Natural Language :: Chinese (Traditional)",
+    "Natural Language :: Thai",
+    "Topic :: Text Processing :: Linguistic"
   ],
   project_urls={
     "Source":URL,
