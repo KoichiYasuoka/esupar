@@ -25,8 +25,8 @@ setuptools.setup(
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
     "Topic :: Text Processing :: Linguistic",
-    "Natural Language :: Japanese"
-    "Natural Language :: Chinese"
+    "Natural Language :: Japanese",
+    "Natural Language :: Chinese",
     "Natural Language :: Thai"
   ],
   project_urls={
