@@ -4,6 +4,7 @@
 MODELS={
   "ja":"KoichiYasuoka/bert-base-japanese-upos",
   "lzh":"KoichiYasuoka/roberta-classical-chinese-base-upos",
+  "lzh_large":"KoichiYasuoka/roberta-classical-chinese-large-upos",
   "th":"KoichiYasuoka/roberta-base-thai-syllable-upos",
   "zh":"KoichiYasuoka/chinese-bert-wwm-ext-upos"
 }
