@@ -9,8 +9,8 @@ MODELS={
   "lzh_base":"KoichiYasuoka/roberta-classical-chinese-base-upos",
   "lzh_large":"KoichiYasuoka/roberta-classical-chinese-large-upos",
   "th":"KoichiYasuoka/roberta-base-thai-syllable-upos",
-  "zh":"KoichiYasuoka/chinese-roberta-base-upos"
-  "zh_base":"KoichiYasuoka/chinese-roberta-base-upos"
+  "zh":"KoichiYasuoka/chinese-roberta-base-upos",
+  "zh_base":"KoichiYasuoka/chinese-roberta-base-upos",
   "zh_bert":"KoichiYasuoka/chinese-bert-wwm-ext-upos"
 }
 
