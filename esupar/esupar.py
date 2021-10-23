@@ -11,7 +11,8 @@ MODELS={
   "th":"KoichiYasuoka/roberta-base-thai-syllable-upos",
   "zh":"KoichiYasuoka/chinese-bert-wwm-ext-upos",
   "zh_bert":"KoichiYasuoka/chinese-bert-wwm-ext-upos",
-  "zh_base":"KoichiYasuoka/chinese-roberta-base-upos"
+  "zh_base":"KoichiYasuoka/chinese-roberta-base-upos",
+  "zh_large":"KoichiYasuoka/chinese-roberta-large-upos"
 }
 
 class Esupar(object):
