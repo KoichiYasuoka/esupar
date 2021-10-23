@@ -45,6 +45,7 @@ Tokenizer, POS-tagger, and dependency-parser with [Transformers](https://hugging
 `esupar.load(model)` loads a natural language processor pipeline, working on [Universal Dependencies](https://universaldependencies.org/format.html). Available `model` options are:
 
 * `model="ja"` Japanese model [bert-base-japanese-upos](https://huggingface.co/KoichiYasuoka/bert-base-japanese-upos) (default)
+* `model="ja_large"` Japanese model [bert-large-japanese-upos](https://huggingface.co/KoichiYasuoka/bert-large-japanese-upos)
 * `model="zh"` Chinese model [chinese-bert-wwm-ext-upos](https://huggingface.co/KoichiYasuoka/chinese-bert-wwm-ext-upos)
 * `model="lzh"` Classical Chinese model [roberta-classical-chinese-base-upos](https://huggingface.co/KoichiYasuoka/roberta-classical-chinese-base-upos)
 * `model="lzh_large"` Classical Chinese model [roberta-classical-chinese-large-upos](https://huggingface.co/KoichiYasuoka/roberta-classical-chinese-large-upos)
