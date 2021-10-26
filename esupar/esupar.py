@@ -7,6 +7,7 @@ MODELS={
   "ja_large":"KoichiYasuoka/bert-large-japanese-upos",
   "ja_luw":"KoichiYasuoka/bert-base-japanese-luw-upos",
   "ja_luw_base":"KoichiYasuoka/bert-base-japanese-luw-upos",
+  "ja_luw_large":"KoichiYasuoka/bert-large-japanese-luw-upos",
   "lzh":"KoichiYasuoka/roberta-classical-chinese-base-upos",
   "lzh_base":"KoichiYasuoka/roberta-classical-chinese-base-upos",
   "lzh_large":"KoichiYasuoka/roberta-classical-chinese-large-upos",
