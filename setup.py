@@ -5,7 +5,7 @@ URL="https://github.com/KoichiYasuoka/esupar"
 
 setuptools.setup(
   name="esupar",
-  version="0.8.2",
+  version="0.8.3",
   description="Tokenizer POS-tagger and Dependency-parser with BERT/RoBERTa models",
   long_description=long_description,
   long_description_content_type="text/markdown",
