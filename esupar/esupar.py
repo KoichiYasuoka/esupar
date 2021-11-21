@@ -34,13 +34,12 @@ class Esupar(object):
     x=[[p,s,e] for (s,e),p in zip(v["offset_mapping"],w) if s<e]
     for i in range(len(x)-1,0,-1):
       if x[i][0].startswith("I-"):
-        if x[i-1][2]==x[i][1]:
-          if x[i-1][0].startswith("B-"):
-            p,s,e=x.pop(i)
-            x[i-1]=[x[i-1][0][2:],x[i-1][1],e]
-          elif x[i-1][0].startswith("I-"):
-            p,s,e=x.pop(i)
-            x[i-1][2]=e
+        if x[i-1][0].startswith("B-"):
+          p,s,e=x.pop(i)
+          x[i-1]=[x[i-1][0][2:],x[i-1][1],e]
+        elif x[i-1][0].startswith("I-"):
+          p,s,e=x.pop(i)
+          x[i-1][2]=e
     for i in range(0,len(x)):
       if x[i][0].startswith("B-") or x[i][0].startswith("I-"):
         x[i][0]=x[i][0][2:]
