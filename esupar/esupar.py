@@ -21,12 +21,17 @@ MODELS={
 
 class Esupar(object):
   def __init__(self,model):
+    import os
     from transformers import AutoTokenizer,AutoModelForTokenClassification
     from transformers.file_utils import cached_path,hf_bucket_url
     from supar import Parser
     self.tokenizer=AutoTokenizer.from_pretrained(model)
     self.tagger=AutoModelForTokenClassification.from_pretrained(model)
-    self.parser=Parser.load(cached_path(hf_bucket_url(model,"supar.model")))
+    f=os.path.join(model,"supar.model")
+    if os.path.isfile(f):
+      self.parser=Parser.load(f)
+    else:
+      self.parser=Parser.load(cached_path(hf_bucket_url(model,"supar.model")))
   def __call__(self,sentence):
     import torch
     v=self.tokenizer(sentence,return_offsets_mapping=True)
