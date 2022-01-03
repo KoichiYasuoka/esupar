@@ -26,6 +26,7 @@ class Esupar(object):
     from transformers.file_utils import cached_path,hf_bucket_url
     from supar import Parser
     self.tokenizer=AutoTokenizer.from_pretrained(model)
+    self.tokenizerfast=(str(type(self.tokenizer)).find("TokenizerFast")>0)
     self.tagger=AutoModelForTokenClassification.from_pretrained(model)
     f=os.path.join(model,"supar.model")
     if os.path.isfile(f):
@@ -34,7 +35,10 @@ class Esupar(object):
       self.parser=Parser.load(cached_path(hf_bucket_url(model,"supar.model")))
   def __call__(self,sentence):
     import torch
-    v=self.tokenizer(sentence,return_offsets_mapping=True)
+    if self.tokenizerfast:
+      v=self.tokenizer(sentence,return_offsets_mapping=True)
+    else:
+      v=self.mapping(sentence)
     if len(v["input_ids"])<self.tokenizer.model_max_length:
       w=[self.tagger.config.id2label[q] for q in torch.argmax(self.tagger(torch.tensor([v["input_ids"]]))["logits"],dim=2)[0].tolist()]
       x=[[p,s,e] for (s,e),p in zip(v["offset_mapping"],w) if s<e]
@@ -49,7 +53,10 @@ class Esupar(object):
         if x[-1][0].startswith("B-"):
           x.pop()
         t=x[-1][2]
-        v=self.tokenizer(sentence[t:],return_offsets_mapping=True)
+        if self.tokenizerfast:
+          v=self.tokenizer(sentence[t:],return_offsets_mapping=True)
+        else:
+          v=self.mapping(sentence[t:])
       w=[self.tagger.config.id2label[q] for q in torch.argmax(self.tagger(torch.tensor([v["input_ids"]]))["logits"],dim=2)[0].tolist()]
       x+=[[p,s+t,e+t] for (s,e),p in zip(v["offset_mapping"],w) if s<e]
     for i in range(len(x)-1,0,-1):
@@ -67,6 +74,24 @@ class Esupar(object):
     d.values[3]=tuple([p for p,s,e in x])
     d.values[9]=tuple(["SpaceAfter=No" if e==s else "_" for (_,_,e),(_,s,_) in zip(x,x[1:])]+["_"])
     return d
+  def mapping(self,sentence):
+    import tokenizations
+    v=self.tokenizer(sentence)
+    a=v["input_ids"]
+    x,y=tokenizations.get_alignments(self.tokenizer.convert_ids_to_tokens(a),sentence)
+    w=[]
+    for i,t in enumerate(x):
+      if t==[]:
+        s=(0,0)
+        if a[i]==self.tokenizer.unk_token_id:
+          b=[0]+[t for t in x[0:i] if t>[]]
+          e=[t for t in x[i+1:] if t>[]]+[len(sentence)]
+          s=(b[-1][-1]+1,e[0][0])
+      else:
+        s=(t[0],t[-1]+1)
+      w.append(s)
+    v["offset_mapping"]=w
+    return v
 
 def load(model="ja"):
   if model in MODELS:
