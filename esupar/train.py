@@ -8,17 +8,11 @@ class UPOSDataset(object):
     self.ids=[]
     self.upos=[]
     with open(conllu,"r",encoding="utf-8") as f:
-      i,u=[],[]
-      for t in f:
-        w=t.split("\t")
-        if len(w)==10 and w[0].isdecimal():
-          v=tokenizer(w[1],add_special_tokens=False)["input_ids"]
-          i+=v
-          u+=[w[3]] if len(v)==1 else ["B-"+w[3]]+["I-"+w[3]]*(len(v)-1)
-        elif t.strip()=="" and len(i)>0:
-          self.ids.append([tokenizer.cls_token_id]+i+[tokenizer.sep_token_id])
-          self.upos.append(["SYM"]+u+["SYM"])
-          i,u=[],[]
+      for s in f.read().strip().split("\n\n"):
+        u=[(w[1],w[3]) for w in [t.split("\t") for t in s.split("\n")] if len(w)==10 and w[0].isdecimal()]
+        v=tokenizer([t for t,p in u],add_special_tokens=False)["input_ids"]
+        self.ids.append([tokenizer.cls_token_id]+sum(v,[])+[tokenizer.sep_token_id])
+        self.upos.append(["SYM"]+sum([["B-"+p]+["I-"+p]*(len(v[i])-1) if len(v[i])>1 else [p] for i,(t,p) in enumerate(u)],[])+["SYM"])
     self.label2id={l:i for i,l in enumerate(sorted(set(sum(self.upos,[]))))}
   def __call__(*args):
     lid={l:i for i,l in enumerate(sorted(set(sum([list(t.label2id) for t in args],[]))))}
