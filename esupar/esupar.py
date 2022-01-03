@@ -84,8 +84,8 @@ class Esupar(object):
       if t>[]:
         s=(t[0],t[-1]+1)
       elif a[i]==self.tokenizer.unk_token_id:
-        b=[-1]+[t for t in x[0:i] if t>[]]
-        e=[t for t in x[i+1:] if t>[]]+[len(sentence)]
+        b=[[-1]]+[t for t in x[0:i] if t>[]]
+        e=[t for t in x[i+1:] if t>[]]+[[len(sentence)]]
         s=(b[-1][-1]+1,e[0][0])
       else:
         s=(0,0)
