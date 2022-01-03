@@ -81,14 +81,14 @@ class Esupar(object):
     x,y=tokenizations.get_alignments(self.tokenizer.convert_ids_to_tokens(a),sentence)
     w=[]
     for i,t in enumerate(x):
-      if t==[]:
-        s=(0,0)
-        if a[i]==self.tokenizer.unk_token_id:
-          b=[0]+[t for t in x[0:i] if t>[]]
-          e=[t for t in x[i+1:] if t>[]]+[len(sentence)]
-          s=(b[-1][-1]+1,e[0][0])
-      else:
+      if t>[]:
         s=(t[0],t[-1]+1)
+      elif a[i]==self.tokenizer.unk_token_id:
+        b=[-1]+[t for t in x[0:i] if t>[]]
+        e=[t for t in x[i+1:] if t>[]]+[len(sentence)]
+        s=(b[-1][-1]+1,e[0][0])
+      else:
+        s=(0,0)
       w.append(s)
     v["offset_mapping"]=w
     return v
