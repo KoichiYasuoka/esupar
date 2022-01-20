@@ -16,8 +16,12 @@ class UPOSDataset(object):
           i+=v
           u+=[w[3]] if len(v)==1 else ["B-"+w[3]]+["I-"+w[3]]*(len(v)-1)
         elif t.strip()=="" and len(i)>0:
-          self.ids.append([tokenizer.cls_token_id]+i+[tokenizer.sep_token_id])
-          self.upos.append(["SYM"]+u+["SYM"])
+          if len(i)<tokenizer.model_max_length-2:
+            self.ids.append([tokenizer.cls_token_id]+i+[tokenizer.sep_token_id])
+            self.upos.append(["SYM"]+u+["SYM"])
+          else:
+            self.ids.append(i[0:tokenizer.model_max_length-1])
+            self.upos.append(u[0:tokenizer.model_max_length-1])
           i,u=[],[]
     self.label2id={l:i for i,l in enumerate(sorted(set(sum(self.upos,[]))))}
   def __call__(*args):
@@ -91,7 +95,7 @@ if __name__=="__main__":
         p+=["-d","0"]
         torch.cuda.empty_cache()
       tokenizer=AutoTokenizer.from_pretrained(sys.argv[2])
-      p+=["-p",os.path.join(sys.argv[2],"supar.model"),"-f","bert","--bert",sys.argv[2],"--embed=","--unk",tokenizer.unk_token,"--train",a,"--dev",b,"--test",c]
+      p+=["-p",os.path.join(sys.argv[2],"supar.model"),"-f","bert","--bert",sys.argv[2],"--embed=","--unk",tokenizer.unk_token,"--buckets",str(batch),"--train",a,"--dev",b,"--test",c]
       subprocess.check_output(p)
   elif len(sys.argv)>5 and sys.argv[3].isdecimal():
     trainer()
