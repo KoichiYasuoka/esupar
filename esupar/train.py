@@ -85,6 +85,8 @@ if __name__=="__main__":
   if len(sys.argv)==5 and sys.argv[4].startswith("batch="):
     batch=int(sys.argv[4][6:])
     sys.argv.pop()
+  elif len(sys.argv)==3:
+    sys.argv.append(".")
   if len(sys.argv)==4:
     with tempfile.TemporaryDirectory() as d:
       import torch
