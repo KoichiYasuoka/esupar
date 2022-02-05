@@ -16,12 +16,12 @@ class UPOSDataset(object):
           i+=v
           u+=[w[3]] if len(v)==1 else ["B-"+w[3]]+["I-"+w[3]]*(len(v)-1)
         elif t.strip()=="" and len(i)>0:
-          if len(i)<tokenizer.model_max_length-2:
+          if len(i)<tokenizer.model_max_length-3:
             self.ids.append([tokenizer.cls_token_id]+i+[tokenizer.sep_token_id])
             self.upos.append(["SYM"]+u+["SYM"])
           else:
-            self.ids.append(i[0:tokenizer.model_max_length-1])
-            self.upos.append(u[0:tokenizer.model_max_length-1])
+            self.ids.append(i[0:tokenizer.model_max_length-2])
+            self.upos.append(u[0:tokenizer.model_max_length-2])
           i,u=[],[]
     self.label2id={l:i for i,l in enumerate(sorted(set(sum(self.upos,[]))))}
   def __call__(*args):
