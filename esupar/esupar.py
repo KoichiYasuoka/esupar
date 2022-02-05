@@ -67,6 +67,9 @@ class Esupar(object):
         elif x[i-1][0].startswith("I-"):
           p,s,e=x.pop(i)
           x[i-1][2]=e
+        elif x[i-1][0]==x[i][0][2:]:
+          p,s,e=x.pop(i)
+          x[i-1]=[x[i-1][0],x[i-1][1],e]
     for i in range(0,len(x)):
       if x[i][0].startswith("B-") or x[i][0].startswith("I-"):
         x[i][0]=x[i][0][2:]
