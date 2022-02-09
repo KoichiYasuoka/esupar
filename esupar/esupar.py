@@ -70,12 +70,48 @@ class Esupar(object):
         elif x[i-1][0]==x[i][0][2:]:
           p,s,e=x.pop(i)
           x[i-1]=[x[i-1][0],x[i-1][1],e]
+        elif x[i][0].startswith("I-"+x[i-1][0]+"+"):
+          p,s,e=x.pop(i)
+          x[i-1]=[p[2:],x[i-1][1],e]
     for i in range(0,len(x)):
       if x[i][0].startswith("B-") or x[i][0].startswith("I-"):
         x[i][0]=x[i][0][2:]
-    d=self.parser.predict([[sentence[s:e] for p,s,e in x]]).sentences[0]
-    d.values[3]=tuple([p for p,s,e in x])
-    d.values[9]=tuple(["SpaceAfter=No" if e==s else "_" for (_,_,e),(_,s,_) in zip(x,x[1:])]+["_"])
+    if ".".join(p for p,s,e in x).find("+")<0:
+      d=self.parser.predict([[sentence[s:e] for p,s,e in x]]).sentences[0]
+      d.values[3]=tuple([p for p,s,e in x])
+      d.values[9]=tuple(["SpaceAfter=No" if e==s else "_" for (_,_,e),(_,s,_) in zip(x,x[1:])]+["_"])
+    else:
+      try:
+        c=self.tagger.config.task_specific_params["upos_multiword"]
+      except:
+        c={}
+      v,m=[],[]
+      for i,(p,s,e) in enumerate(x):
+        t=sentence[s:e]
+        if p.find("+")<0:
+          v.append((t,p,"SpaceAfter=No" if i+1<len(x) and e==x[i+1][1] else "_"))
+        else:
+          q=p.split("+")
+          w=[t]+["_"]*len(q)
+          if p in c and t in c[p]:
+            w=c[p][t]+["_"]*len(q)
+          m.append((len(v)+1,len(v)+len(q),t,"SpaceAfter=No" if i+1<len(x) and e==x[i+1][1] else "_"))
+          for j,k in zip(w,q):
+            v.append((j,k,"_"))
+      d=self.parser.predict([[t for t,p,z in v]]).sentences[0]
+      d.values[3]=tuple([p for t,p,z in v])
+      d.values[9]=tuple([z for t,p,z in v])
+      for s,e,t,z in reversed(m):
+        for i in range(10):
+          x=list(d.values[i])
+          if i==0:
+            d.values[i]=tuple(x[0:s-1]+[str(s)+"-"+str(e)]+x[s-1:])
+          elif i==1:
+            d.values[i]=tuple(x[0:s-1]+[t]+x[s-1:])
+          elif i==9:
+            d.values[i]=tuple(x[0:s-1]+[z]+x[s-1:])
+          else:
+            d.values[i]=tuple(x[0:s-1]+["_"]+x[s-1:])
     return d
   def mapping(self,sentence):
     import tokenizations
