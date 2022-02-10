@@ -9,16 +9,17 @@ class UPOSDataset(object):
     self.upos=[]
     self.multiword={}
     with open(conllu,"r",encoding="utf-8") as f:
-      form,upos,mw,mwid=[],[],[],[]
+      form,upos,nosp,mw,mwid=[],[],[False],[],[]
       for t in f:
         w=t.split("\t")
         if len(w)==10:
           if w[0].isdecimal():
             form.append(w[1])
             upos.append(w[3])
+            nosp.append(w[9].find("SpaceAfter=No")>=0)
           elif w[0].find("-")>0:
             mw.append(w[1])
-            mwid.append(w[0].split("-"))
+            mwid.append(w[0].split("-")+[w[9].find("SpaceAfter=No")>=0])
         elif t.strip()=="" and form!=[]:
           g={}
           if mw!=[]:
@@ -38,17 +39,22 @@ class UPOSDataset(object):
                   self.multiword[p]={i:form[s:e]}
                 form=form[0:s]+[i]+form[e:]
                 upos=upos[0:s]+[p]+upos[e:]
+                nosp=nosp[0:s+1]+[j[2]]+nosp[e+1:]
               else:
                 y=""
                 while s<e:
                   g[s]=[l[i] for i,j in enumerate(x) if len(y)<j and j<=len(y+form[s])]
                   y+=form[s]
                   s+=1
+                nosp[e]=j[2]
           v=tokenizer(form,add_special_tokens=False)
+          w=tokenizer.convert_tokens_to_ids(form)
           i,u=[],[]
           for j,(x,y) in enumerate(zip(v["input_ids"],upos)):
             if j in g and g[j]!=[]:
               x=g[j]
+            elif nosp[j] and w[j]!=tokenizer.unk_token_id:
+              x=[w[j]]
             i+=x
             u+=[y] if len(x)==1 else ["B-"+y]+["I-"+y]*(len(x)-1)
           if len(i)<tokenizer.model_max_length-3:
@@ -57,7 +63,7 @@ class UPOSDataset(object):
           else:
             self.ids.append(i[0:tokenizer.model_max_length-2])
             self.upos.append(u[0:tokenizer.model_max_length-2])
-          form,upos,mw,mwid=[],[],[],[]
+          form,upos,nosp,mw,mwid=[],[],[False],[],[]
     self.label2id={l:i for i,l in enumerate(sorted(set(sum(self.upos,[]))))}
   def __call__(*args):
     lid={l:i for i,l in enumerate(sorted(set(sum([list(t.label2id) for t in args],[]))))}
