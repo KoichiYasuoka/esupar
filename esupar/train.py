@@ -5,9 +5,14 @@ import os,sys,subprocess,tempfile
 
 class UPOSDataset(object):
   def __init__(self,conllu,tokenizer):
+    self.tokenizerfast=(str(type(tokenizer)).find("TokenizerFast")>0)
     self.ids=[]
     self.upos=[]
     self.multiword={}
+    try:
+      from tokenizations import get_alignments
+    except:
+      get_alignments=None
     with open(conllu,"r",encoding="utf-8") as f:
       form,upos,nosp,mw,mwid=[],[],[False],[],[]
       for t in f:
@@ -20,11 +25,39 @@ class UPOSDataset(object):
           elif w[0].find("-")>0:
             mw.append(w[1])
             mwid.append(w[0].split("-")+[w[9].find("SpaceAfter=No")>=0])
+        elif t.startswith("# text = "):
+          text=t[9:].strip()
         elif t.strip()=="" and form!=[]:
+          if mw==[] and get_alignments:
+            v=tokenizer.tokenize(text,add_special_tokens=False)
+            k,y=-1,""
+            for i,j in enumerate(get_alignments(form,v)[0]):
+              if j==[]:
+                break
+              if k==j[0]:
+                if y=="":
+                  y=form[i-1]+form[i]
+                  n=[i,i+1]
+                else:
+                  y+=form[i]
+                  n.append(i+1)
+              elif y!="":
+                mw.append(y)
+                mwid.append([n[0],n[-1],nosp[n[-1]]])
+                y=""
+              k=j[-1]
           g={}
           if mw!=[]:
-            v=tokenizer(mw,add_special_tokens=False,return_offsets_mapping=True)
-            for i,j,k,l in reversed(list(zip(mw,mwid,v["offset_mapping"],v["input_ids"]))):
+            if self.tokenizerfast:
+              v=tokenizer(mw,add_special_tokens=False,return_offsets_mapping=True)
+              m=v["offset_mapping"]
+              n=v["input_ids"]
+            elif get_alignments:
+              m=[[(t[0],t[-1]+1) for t in get_alignments(tokenizer.tokenize(i,add_special_tokens=False),i)[0]] for i in mw]
+              n=tokenizer(mw,add_special_tokens=False)["input_ids"]
+            else:
+              m=n=[]
+            for i,j,k,l in reversed(list(zip(mw,mwid,m,n))):
               s,e,x,y=int(j[0])-1,int(j[1]),[e for s,e in k],""
               for u in form[s:e]:
                 y+=u
