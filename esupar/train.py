@@ -20,9 +20,10 @@ class UPOSDataset(object):
             mw.append(w[1])
             mwid.append(w[0].split("-"))
         elif t.strip()=="" and form!=[]:
+          g={}
           if mw!=[]:
             v=tokenizer(mw,add_special_tokens=False,return_offsets_mapping=True)
-            for i,j,k in reversed(list(zip(mw,mwid,v["offset_mapping"]))):
+            for i,j,k,l in reversed(list(zip(mw,mwid,v["offset_mapping"],v["input_ids"]))):
               s,e,x,y=int(j[0])-1,int(j[1]),[e for s,e in k],""
               for u in form[s:e]:
                 y+=u
@@ -37,9 +38,17 @@ class UPOSDataset(object):
                   self.multiword[p]={i:form[s:e]}
                 form=form[0:s]+[i]+form[e:]
                 upos=upos[0:s]+[p]+upos[e:]
+              else:
+                y=""
+                while s<e:
+                  g[s]=[l[i] for i,j in enumerate(x) if len(y)<j and j<=len(y+form[s])]
+                  y+=form[s]
+                  s+=1
           v=tokenizer(form,add_special_tokens=False)
           i,u=[],[]
-          for x,y in zip(v["input_ids"],upos):
+          for j,(x,y) in enumerate(zip(v["input_ids"],upos)):
+            if j in g and g[j]!=[]:
+              x=g[j]
             i+=x
             u+=[y] if len(x)==1 else ["B-"+y]+["I-"+y]*(len(x)-1)
           if len(i)<tokenizer.model_max_length-3:
