@@ -103,9 +103,14 @@ class Esupar(object):
           w=[t]+["_"]*len(q)
           if p in c and t in c[p]:
             w=c[p][t]+["_"]*len(q)
-          m.append((len(v)+1,len(v)+len(q),t,"SpaceAfter=No" if i+1<len(x) and e==x[i+1][1] else "_"))
-          for j,k in zip(w,q):
-            v.append((j,k,"_"))
+          if t=="".join(w[0:len(q)]):
+            for j,k in zip(w,q):
+              v.append((j,k,"SpaceAfter=No"))
+            v[-1]=(j,k,"SpaceAfter=No" if i+1<len(x) and e==x[i+1][1] else "_")
+          else:
+            m.append((len(v)+1,len(v)+len(q),t,"SpaceAfter=No" if i+1<len(x) and e==x[i+1][1] else "_"))
+            for j,k in zip(w,q):
+              v.append((j,k,"_"))
       d=self.parser.predict([[t for t,p,z in v]]).sentences[0]
       d.values[3]=tuple([p for t,p,z in v])
       d.values[9]=tuple([z for t,p,z in v])
