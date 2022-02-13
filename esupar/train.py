@@ -28,12 +28,16 @@ class UPOSDataset(object):
         elif t.startswith("# text = "):
           text=t[9:].strip()
         elif t.strip()=="" and form!=[]:
+          g={}
           if mw==[] and get_alignments:
             v=tokenizer.tokenize(text,add_special_tokens=False)
+            w=tokenizer.convert_tokens_to_ids(v)
             k,y=-1,""
             for i,j in enumerate(get_alignments(form,v)[0]):
               if j==[]:
+                g={}
                 break
+              g[i]=[w[x] for x in j]
               if k==j[0]:
                 if y=="":
                   y=form[i-1]+form[i]
@@ -46,8 +50,8 @@ class UPOSDataset(object):
                 mwid.append([n[0],n[-1],nosp[n[-1]]])
                 y=""
               k=j[-1]
-          g={}
           if mw!=[]:
+            g={}
             if self.tokenizerfast:
               v=tokenizer(mw,add_special_tokens=False,return_offsets_mapping=True)
               m=v["offset_mapping"]
