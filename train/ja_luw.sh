@@ -2,6 +2,8 @@
 pip3 install -U esupar fugashi unidic-lite pytokenizations
 test -d UD_Japanese-GSDLUW || git clone --depth=1 https://github.com/UniversalDependencies/UD_Japanese-GSDLUW
 
+python3 -m esupar.train KoichiYasuoka/roberta-small-japanese-aozora KoichiYasuoka/roberta-small-japanese-luw-upos UD_Japanese-GSDLUW
+python3 -m esupar.train KoichiYasuoka/roberta-small-japanese-aozora-char KoichiYasuoka/roberta-small-japanese-char-luw-upos UD_Japanese-GSDLUW
 python3 -m esupar.train KoichiYasuoka/roberta-base-japanese-aozora KoichiYasuoka/roberta-base-japanese-luw-upos UD_Japanese-GSDLUW
 python3 -m esupar.train KoichiYasuoka/roberta-base-japanese-aozora-char KoichiYasuoka/roberta-base-japanese-char-luw-upos UD_Japanese-GSDLUW
 python3 -m esupar.train KoichiYasuoka/roberta-large-japanese-aozora KoichiYasuoka/roberta-large-japanese-luw-upos UD_Japanese-GSDLUW batch=3
