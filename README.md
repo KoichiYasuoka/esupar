@@ -55,6 +55,8 @@ Tokenizer, POS-tagger, and dependency-parser with [Transformers](https://hugging
 * `model="lzh"` Classical Chinese model [roberta-classical-chinese-base-upos](https://huggingface.co/KoichiYasuoka/roberta-classical-chinese-base-upos)
 * `model="lzh_large"` Classical Chinese model [roberta-classical-chinese-large-upos](https://huggingface.co/KoichiYasuoka/roberta-classical-chinese-large-upos)
 * `model="th"` Thai model [roberta-base-thai-syllable-upos](https://huggingface.co/KoichiYasuoka/roberta-base-thai-syllable-upos)
+* `model="en"` English model [roberta-base-english-upos](https://huggingface.co/KoichiYasuoka/roberta-base-english-upos)
+* `model="en_large"` English model [roberta-large-english-upos](https://huggingface.co/KoichiYasuoka/roberta-large-english-upos)
 
 ## Installation for Linux
 

@@ -2,6 +2,9 @@
 # coding=utf-8
 
 MODELS={
+  "en":"KoichiYasuoka/roberta-base-english-upos",
+  "en_base":"KoichiYasuoka/roberta-base-english-upos",
+  "en_large":"KoichiYasuoka/roberta-large-english-upos",
   "ja":"KoichiYasuoka/bert-base-japanese-upos",
   "ja_base":"KoichiYasuoka/bert-base-japanese-upos",
   "ja_large":"KoichiYasuoka/bert-large-japanese-upos",
