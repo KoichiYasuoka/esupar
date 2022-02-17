@@ -9,6 +9,7 @@ class UPOSDataset(object):
     self.ids=[]
     self.upos=[]
     self.multiword={}
+    label={}
     try:
       from tokenizations import get_alignments
     except:
@@ -100,8 +101,9 @@ class UPOSDataset(object):
           else:
             self.ids.append(i[0:tokenizer.model_max_length-2])
             self.upos.append(u[0:tokenizer.model_max_length-2])
+          label=set(sum([self.upos[-1],list(label)],[]))
           form,upos,nosp,mw,mwid=[],[],[False],[],[]
-    self.label2id={l:i for i,l in enumerate(sorted(set(sum(self.upos,[]))))}
+    self.label2id={l:i for i,l in enumerate(sorted(label))}
   def __call__(*args):
     lid={l:i for i,l in enumerate(sorted(set(sum([list(t.label2id) for t in args],[]))))}
     for t in args:
