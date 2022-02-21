@@ -174,16 +174,17 @@ if __name__=="__main__":
     sys.argv.append(".")
   if len(sys.argv)==4:
     with tempfile.TemporaryDirectory() as d:
-      import torch
-      from transformers import AutoTokenizer
       a,b,c=makeupos(d,batch)
-      p=["biaffine-dep","train","-c","biaffine-dep-en","-b"]
-      if torch.cuda.is_available():
-        p+=["-d","0"]
-        torch.cuda.empty_cache()
-      tokenizer=AutoTokenizer.from_pretrained(sys.argv[2])
-      p+=["-p",os.path.join(sys.argv[2],"supar.model"),"-f","bert","--bert",sys.argv[2],"--embed=","--unk",tokenizer.unk_token,"--buckets",str(batch),"--train",a,"--dev",b,"--test",c]
-      subprocess.check_output(p)
+      subprocess.check_output([sys.executable,"-m","esupar.train",sys.argv[2],sys.argv[2],str(batch),"///",a,b,c])
+  elif len(sys.argv)==8 and sys.argv[4]=="///":
+    import torch
+    from transformers import AutoTokenizer
+    p=["biaffine-dep","train","-c","biaffine-dep-en","-b"]
+    if torch.cuda.is_available():
+      p+=["-d","0"]
+    tokenizer=AutoTokenizer.from_pretrained(sys.argv[1])
+    p+=["-p",os.path.join(sys.argv[2],"supar.model"),"-f","bert","--bert",sys.argv[1],"--embed=","--unk",tokenizer.unk_token,"--buckets",sys.argv[3],"--train",sys.argv[5],"--dev",sys.argv[6],"--test",sys.argv[7]]
+    subprocess.check_output(p)
   elif len(sys.argv)>5 and sys.argv[3].isdecimal():
     trainer()
   else:
