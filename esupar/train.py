@@ -93,8 +93,9 @@ class UPOSDataset(object):
               x=g[j]
             elif nosp[j] and w[j]!=tokenizer.unk_token_id:
               x=[w[j]]
-            i+=x
-            u+=[y] if len(x)==1 else ["B-"+y]+["I-"+y]*(len(x)-1)
+            if x!=[]:
+              i+=x
+              u+=[y] if len(x)==1 else ["B-"+y]+["I-"+y]*(len(x)-1)
           if len(i)<tokenizer.model_max_length-3:
             self.ids.append([tokenizer.cls_token_id]+i+[tokenizer.sep_token_id])
             self.upos.append(["SYM"]+u+["SYM"])
