@@ -93,7 +93,7 @@ class Esupar(object):
     if ".".join(p for p,s,e in x).find("+")<0:
       d=self.parser.predict([[sentence[s:e] for p,s,e in x]]).sentences[0]
       d.values[3]=tuple([p for p,s,e in x])
-      d.values[9]=tuple(["SpaceAfter=No" if e==s else "_" for (_,_,e),(_,s,_) in zip(x,x[1:])]+["_"])
+      d.values[9]=tuple(["SpaceAfter=No" if e==s else "_" for (_,_,e),(_,s,_) in zip(x,x[1:])]+["SpaceAfter=No"])
     else:
       try:
         c=self.tagger.config.task_specific_params["upos_multiword"]
@@ -103,7 +103,7 @@ class Esupar(object):
       for i,(p,s,e) in enumerate(x):
         t=sentence[s:e]
         if p.find("+")<0:
-          v.append((t,p,"SpaceAfter=No" if i+1<len(x) and e==x[i+1][1] else "_"))
+          v.append((t,p,"_" if i+1<len(x) and e<x[i+1][1] else "SpaceAfter=No"))
         else:
           q=p.split("+")
           w=[t]+["_"]*len(q)
@@ -112,9 +112,9 @@ class Esupar(object):
           if t=="".join(w[0:len(q)]):
             for j,k in zip(w,q):
               v.append((j,k,"SpaceAfter=No"))
-            v[-1]=(j,k,"SpaceAfter=No" if i+1<len(x) and e==x[i+1][1] else "_")
+            v[-1]=(j,k,"_" if i+1<len(x) and e<x[i+1][1] else "SpaceAfter=No")
           else:
-            m.append((len(v)+1,len(v)+len(q),t,"SpaceAfter=No" if i+1<len(x) and e==x[i+1][1] else "_"))
+            m.append((len(v)+1,len(v)+len(q),t,"_" if i+1<len(x) and e<x[i+1][1] else "SpaceAfter=No"))
             for j,k in zip(w,q):
               v.append((j,k,"_"))
       d=self.parser.predict([[t for t,p,z in v]]).sentences[0]
