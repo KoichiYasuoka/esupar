@@ -72,7 +72,7 @@ Make sure to get `python37-devel` `python37-pip` `python37-cython` `python37-num
 
 ```sh
 curl -L https://raw.githubusercontent.com/KoichiYasuoka/CygTorch/master/installer/supar.sh | sh
-pip3.7 install esupar --no-build-isolation
+pip3.7 install esupar
 ```
 
 ## Installation for Google Colaboratory
