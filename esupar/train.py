@@ -113,6 +113,56 @@ class UPOSDataset(object):
   __len__=lambda self:len(self.ids)
   __getitem__=lambda self,i:{"input_ids":self.ids[i],"labels":[self.label2id[t] for t in self.upos[i]]}
 
+class UPOSFileDataset(object):
+  def __init__(self,conllu,tokenizer):
+    self.conllu=open(conllu,"r",encoding="utf-8")
+    self.tokenizer=tokenizer
+    self.seeks=[0]
+    self.multiword={}
+    label=set()
+    s=self.conllu.readline()
+    while s!="":
+      if s=="\n":
+        self.seeks.append(self.conllu.tell())
+      else:
+        w=s.split("\t")
+        if len(w)==10 and w[0].isdecimal:
+          label.add(w[3])
+      s=self.conllu.readline()
+    lid={}
+    for i,l in enumerate(sorted(label)):
+      lid[l],lid["B-"+l],lid["I-"+l]=i*3,i*3+1,i*3+2
+    self.label2id=lid
+  def __call__(*args):
+    lid={l:i for i,l in enumerate(sorted(set(sum([list(t.label2id) for t in args],[]))))}
+    for t in args:
+      t.label2id=lid
+    return lid
+  def __del__(self):
+    self.conllu.close()
+  __len__=lambda self:len(self.seeks)-1
+  def __getitem__(self,i):
+    self.conllu.seek(self.seeks[i])
+    form,upos=[],[]
+    while self.conllu.tell()<self.seeks[i+1]:
+      w=self.conllu.readline().split("\t")
+      if len(w)==10 and w[0].isdecimal:
+        form.append(w[1])
+        upos.append(w[3])
+    v=self.tokenizer(form,add_special_tokens=False)
+    i,u=[],[]
+    for j,(x,y) in enumerate(zip(v["input_ids"],upos)):
+      if x!=[]:
+        i+=x
+        u+=[y] if len(x)==1 else ["B-"+y]+["I-"+y]*(len(x)-1)
+    if len(i)<self.tokenizer.model_max_length-3:
+      ids=[self.tokenizer.cls_token_id]+i+[self.tokenizer.sep_token_id]
+      upos=["SYM"]+u+["SYM"]
+    else:
+      ids=i[0:self.tokenizer.model_max_length-2]
+      upos=u[0:self.tokenizer.model_max_length-2]
+    return {"input_ids":ids,"labels":[self.label2id[t] for t in upos]}
+
 def makeupos(tmpdir,batch):
   import glob
   if os.path.isdir(sys.argv[3]):
@@ -137,21 +187,21 @@ def makeupos(tmpdir,batch):
     subprocess.check_output([sys.executable,"-m","esupar.train",sys.argv[1],sys.argv[2],str(batch),tmpdir,train_file,dev_file,test_file])
   return train_file,dev_file,test_file
 
-def trainer():
+def trainer(uposdataset):
   from transformers import AutoTokenizer,AutoModelForTokenClassification,AutoConfig,DataCollatorForTokenClassification,TrainingArguments,Trainer
   tokenizer=AutoTokenizer.from_pretrained(sys.argv[1])
   if len(sys.argv)==6:
-    train_dts=UPOSDataset(sys.argv[5],tokenizer)
+    train_dts=uposdataset(sys.argv[5],tokenizer)
     eval_dts=None
     label2id=train_dts.label2id
   elif len(sys.argv)==7:
-    train_dts=UPOSDataset(sys.argv[5],tokenizer)
-    eval_dts=UPOSDataset(sys.argv[6],tokenizer)
+    train_dts=uposdataset(sys.argv[5],tokenizer)
+    eval_dts=uposdataset(sys.argv[6],tokenizer)
     label2id=train_dts(eval_dts)
   else:
-    train_dts=UPOSDataset(sys.argv[5],tokenizer)
-    eval_dts=UPOSDataset(sys.argv[6],tokenizer)
-    test_dts=UPOSDataset(sys.argv[7],tokenizer)
+    train_dts=uposdataset(sys.argv[5],tokenizer)
+    eval_dts=uposdataset(sys.argv[6],tokenizer)
+    test_dts=uposdataset(sys.argv[7],tokenizer)
     label2id=train_dts(eval_dts,test_dts)
   config=AutoConfig.from_pretrained(sys.argv[1],num_labels=len(label2id),label2id=label2id,id2label={i:l for l,i in label2id.items()})
   if train_dts.multiword!={}:
@@ -187,7 +237,9 @@ if __name__=="__main__":
     p+=["-p",os.path.join(sys.argv[2],"supar.model"),"-f","bert","--bert",sys.argv[1],"--embed=","--unk",tokenizer.unk_token,"--buckets",sys.argv[3],"--train",sys.argv[5],"--dev",sys.argv[6],"--test",sys.argv[7]]
     subprocess.check_output(p)
   elif len(sys.argv)>5 and sys.argv[3].isdecimal():
-    trainer()
+    trainer(UPOSDataset)
+  elif len(sys.argv)>5 and sys.argv[3].startswith("+"):
+    trainer(UPOSFileDataset)
   else:
     print("Usage:",os.path.basename(sys.executable),"-m esupar.train source-model target-model UD_URL [batch=32]")
 
