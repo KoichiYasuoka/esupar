@@ -9,7 +9,7 @@ class UPOSDataset(object):
     self.ids=[]
     self.upos=[]
     self.multiword={}
-    label={}
+    label={"SYM"}
     try:
       from tokenizations import get_alignments
     except:
@@ -119,15 +119,29 @@ class UPOSFileDataset(object):
     self.tokenizer=tokenizer
     self.seeks=[0]
     self.multiword={}
-    label=set()
+    label=set(["SYM"])
     s=self.conllu.readline()
     while s!="":
       if s=="\n":
         self.seeks.append(self.conllu.tell())
       else:
         w=s.split("\t")
-        if len(w)==10 and w[0].isdecimal:
-          label.add(w[3])
+        if len(w)==10:
+          if w[0].isdecimal():
+            label.add(w[3])
+          elif w[0].find("-")>0:
+            t=w[0].split("-")
+            f,j,k=w[1],[],[]
+            for i in range(int(t[0]),int(t[1])+1):
+              w=self.conllu.readline().split("\t")
+              j.append(w[3])
+              k.append(w[1])
+            p="+".join(j)
+            label.add(p)
+            if p in self.multiword:
+              self.multiword[p][f]=list(k)
+            else:
+              self.multiword[p]={f:list(k)}
       s=self.conllu.readline()
     lid={}
     for i,l in enumerate(sorted(label)):
@@ -146,9 +160,16 @@ class UPOSFileDataset(object):
     form,upos=[],[]
     while self.conllu.tell()<self.seeks[i+1]:
       w=self.conllu.readline().split("\t")
-      if len(w)==10 and w[0].isdecimal:
+      if len(w)==10:
         form.append(w[1])
-        upos.append(w[3])
+        if w[0].isdecimal():
+          upos.append(w[3])
+        elif w[0].find("-")>0:
+          t=w[0].split("-")
+          u=[]
+          for j in range(int(t[0]),int(t[1])+1):
+            u.append(self.conllu.readline().split("\t")[3])
+          upos.append("+".join(u))
     v=self.tokenizer(form,add_special_tokens=False)
     i,u=[],[]
     for j,(x,y) in enumerate(zip(v["input_ids"],upos)):
