@@ -91,7 +91,7 @@ class UPOSDataset(object):
           for j,(x,y) in enumerate(zip(v["input_ids"],upos)):
             if j in g and g[j]!=[]:
               x=g[j]
-            elif nosp[j] and w[j]!=tokenizer.unk_token_id:
+            elif j<len(nosp) and nosp[j] and w[j]!=tokenizer.unk_token_id:
               x=[w[j]]
             if x!=[]:
               i+=x
