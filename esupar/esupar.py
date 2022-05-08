@@ -2,6 +2,7 @@
 # coding=utf-8
 
 MODELS={
+  "cop":"KoichiYasuoka/roberta-base-coptic-upos",
   "de":"KoichiYasuoka/bert-base-german-upos",
   "de_base":"KoichiYasuoka/bert-base-german-upos",
   "de_large":"KoichiYasuoka/bert-large-german-upos",
