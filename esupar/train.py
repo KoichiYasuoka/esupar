@@ -58,8 +58,16 @@ class UPOSDataset(object):
               m=v["offset_mapping"]
               n=v["input_ids"]
             elif get_alignments:
-              m=[[(t[0],t[-1]+1) for t in get_alignments(tokenizer.tokenize(i,add_special_tokens=False),i)[0]] for i in mw]
-              n=tokenizer(mw,add_special_tokens=False)["input_ids"]
+              m,n,v=[],[],[]
+              for i,j in enumerate(tokenizer(mw,add_special_tokens=False)["input_ids"]):
+                if [k for k in j if k==tokenizer.unk_token_id]==[]:
+                  m.append([(t[0],t[-1]+1) for t in get_alignments(tokenizer.tokenize(mw[i],add_special_tokens=False),mw[i])[0]])
+                  n.append(j)
+                else:
+                  v.append(i)
+              for i in reversed(v):
+                mw.pop(i)
+                mwid.pop(i)
             else:
               m=n=[]
             for i,j,k,l in reversed(list(zip(mw,mwid,m,n))):
