@@ -15,7 +15,7 @@ class UPOSDataset(object):
     except:
       get_alignments=None
     with open(conllu,"r",encoding="utf-8") as f:
-      form,upos,nosp,mw,mwid=[],[],[False],[],[]
+      form,upos,nosp,mw,mwid,text=[],[],[False],[],[],None
       for t in f:
         w=t.split("\t")
         if len(w)==10:
@@ -30,7 +30,7 @@ class UPOSDataset(object):
           text=t[9:].strip()
         elif t.strip()=="" and form!=[]:
           g={}
-          if mw==[] and get_alignments:
+          if mw==[] and get_alignments and text:
             v=tokenizer.tokenize(text,add_special_tokens=False)
             w=tokenizer.convert_tokens_to_ids(v)
             k,y=-1,""
@@ -111,7 +111,7 @@ class UPOSDataset(object):
             self.ids.append(i[0:tokenizer.model_max_length-2])
             self.upos.append(u[0:tokenizer.model_max_length-2])
           label=set(sum([self.upos[-1],list(label)],[]))
-          form,upos,nosp,mw,mwid=[],[],[False],[],[]
+          form,upos,nosp,mw,mwid,text=[],[],[False],[],[],None
     self.label2id={l:i for i,l in enumerate(sorted(label))}
   def __call__(*args):
     lid={l:i for i,l in enumerate(sorted(set(sum([list(t.label2id) for t in args],[]))))}
