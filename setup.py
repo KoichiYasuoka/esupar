@@ -6,7 +6,7 @@ URL="https://github.com/KoichiYasuoka/esupar"
 setuptools.setup(
   name="esupar",
   version="1.3.0",
-  description="Tokenizer POS-tagger and Dependency-parser with BERT/RoBERTa models for Japanese Chinese and Thai Language",
+  description="Tokenizer POS-tagger and Dependency-parser with BERT/RoBERTa/DeBERTa models for Japanese and other languages",
   long_description=long_description,
   long_description_content_type="text/markdown",
   url=URL,
