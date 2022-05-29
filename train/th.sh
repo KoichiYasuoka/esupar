@@ -13,5 +13,7 @@ python3 -m esupar.train KoichiYasuoka/roberta-base-thai-spm KoichiYasuoka/robert
 python3 -m esupar.train KoichiYasuoka/roberta-base-thai-spm-upos KoichiYasuoka/roberta-base-thai-spm-upos 32 /// train.conllu dev.conllu test.conllu
 python3 -m esupar.train KoichiYasuoka/roberta-base-thai-syllable KoichiYasuoka/roberta-base-thai-syllable-upos 32 /tmp train.upos
 python3 -m esupar.train KoichiYasuoka/roberta-base-thai-syllable-upos KoichiYasuoka/roberta-base-thai-syllable-upos 32 /// train.conllu dev.conllu test.conllu
+python3 -m esupar.train KoichiYasuoka/deberta-base-thai KoichiYasuoka/deberta-base-thai-upos 32 /tmp train.upos
+python3 -m esupar.train KoichiYasuoka/deberta-base-thai-upos KoichiYasuoka/deberta-base-thai-upos 32 /// train.conllu dev.conllu test.conllu
 
 exit 0

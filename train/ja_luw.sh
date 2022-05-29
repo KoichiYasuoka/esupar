@@ -9,6 +9,10 @@ python3 -m esupar.train KoichiYasuoka/roberta-base-japanese-aozora-char KoichiYa
 python3 -m esupar.train KoichiYasuoka/roberta-large-japanese-aozora KoichiYasuoka/roberta-large-japanese-luw-upos UD_Japanese-GSDLUW batch=3
 python3 -m esupar.train KoichiYasuoka/roberta-large-japanese-aozora-char KoichiYasuoka/roberta-large-japanese-char-luw-upos UD_Japanese-GSDLUW batch=8
 
+python3 -m esupar.train KoichiYasuoka/deberta-small-japanese-aozora KoichiYasuoka/deberta-small-japanese-luw-upos UD_Japanese-GSDLUW
+python3 -m esupar.train KoichiYasuoka/deberta-base-japanese-aozora KoichiYasuoka/deberta-base-japanese-luw-upos UD_Japanese-GSDLUW
+python3 -m esupar.train KoichiYasuoka/deberta-large-japanese-aozora KoichiYasuoka/deberta-large-japanese-luw-upos UD_Japanese-GSDLUW batch=8
+
 python3 -m esupar.train cl-tohoku/bert-base-japanese-v2 KoichiYasuoka/bert-base-japanese-unidic-luw-upos UD_Japanese-GSDLUW
 python3 -m esupar.train KoichiYasuoka/bert-base-japanese-char-extended KoichiYasuoka/bert-base-japanese-luw-upos UD_Japanese-GSDLUW
 python3 -m esupar.train cl-tohoku/bert-large-japanese KoichiYasuoka/bert-large-japanese-unidic-luw-upos UD_Japanese-GSDLUW batch=8
