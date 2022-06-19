@@ -94,7 +94,9 @@ class Esupar(object):
         x[i][0]=x[i][0][2:]
     if ".".join(p for p,s,e in x).find("+")<0:
       d=self.parser.predict([[sentence[s:e] for p,s,e in x]]).sentences[0]
-      d.values[3]=tuple([p for p,s,e in x])
+      v=[p.split("|") for p,s,e in x]
+      d.values[3]=tuple([p[0] for p in v])
+      d.values[5]=tuple(["_" if len(p)<2 else "|".join(p[1:]) for p in v])
       d.values[9]=tuple(["SpaceAfter=No" if e==s else "_" for (_,_,e),(_,s,_) in zip(x,x[1:])]+["SpaceAfter=No"])
     else:
       try:
@@ -120,7 +122,9 @@ class Esupar(object):
             for j,k in zip(w,q):
               v.append((j,k,"_"))
       d=self.parser.predict([[t for t,p,z in v]]).sentences[0]
-      d.values[3]=tuple([p for t,p,z in v])
+      x=[p.split("|") for t,p,z in v]
+      d.values[3]=tuple([p[0] for p in x])
+      d.values[5]=tuple(["_" if len(p)<2 else "|".join(p[1:]) for p in x])
       d.values[9]=tuple([z for t,p,z in v])
       for s,e,t,z in reversed(m):
         for i in range(10):
