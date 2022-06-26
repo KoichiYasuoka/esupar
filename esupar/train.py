@@ -21,7 +21,7 @@ class UPOSDataset(object):
         if len(w)==10:
           if w[0].isdecimal():
             form.append(w[1])
-            upos.append(w[3])
+            upos.append(w[3] if w[5]=="_" else w[3]+"|"+w[5])
             nosp.append(w[9].find("SpaceAfter=No")>=0)
           elif w[0].find("-")>0:
             mw.append(w[1])
@@ -136,13 +136,13 @@ class UPOSFileDataset(object):
         w=s.split("\t")
         if len(w)==10:
           if w[0].isdecimal():
-            label.add(w[3])
+            label.add(w[3] if w[5]=="_" else w[3]+"|"+w[5])
           elif w[0].find("-")>0:
             t=w[0].split("-")
             f,j,k=w[1],[],[]
             for i in range(int(t[0]),int(t[1])+1):
               w=self.conllu.readline().split("\t")
-              j.append(w[3])
+              j.append(w[3] if w[5]=="_" else w[3]+"|"+w[5])
               k.append(w[1])
             p="+".join(j)
             label.add(p)
@@ -171,12 +171,13 @@ class UPOSFileDataset(object):
       if len(w)==10:
         form.append(w[1])
         if w[0].isdecimal():
-          upos.append(w[3])
+          upos.append(w[3] if w[5]=="_" else w[3]+"|"+w[5])
         elif w[0].find("-")>0:
           t=w[0].split("-")
           u=[]
           for j in range(int(t[0]),int(t[1])+1):
-            u.append(self.conllu.readline().split("\t")[3])
+            k=self.conllu.readline().split("\t")
+            u.append(k[3] if k[5]=="_" else k[3]+"|"+k[5])
           upos.append("+".join(u))
     v=self.tokenizer(form,add_special_tokens=False)
     i,u=[],[]
