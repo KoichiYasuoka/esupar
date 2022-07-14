@@ -47,26 +47,27 @@ class Esupar(object):
       v=self.tokenizer(sentence,return_offsets_mapping=True)
     else:
       v=self.mapping(sentence)
-    if len(v["input_ids"])<self.tokenizer.model_max_length:
-      w=[self.tagger.config.id2label[q] for q in torch.argmax(self.tagger(torch.tensor([v["input_ids"]]))["logits"],dim=2)[0].tolist()]
-      x=[[p,s,e] for (s,e),p in zip(v["offset_mapping"],w) if s<e]
-    else:
-      t=0
-      x=[]
-      while len(v["input_ids"])>=self.tokenizer.model_max_length:
-        w=[self.tagger.config.id2label[q] for q in torch.argmax(self.tagger(torch.tensor([v["input_ids"][0:self.tokenizer.model_max_length-1]]))["logits"],dim=2)[0].tolist()]
-        x+=[[p,s+t,e+t] for (s,e),p in zip(v["offset_mapping"][0:self.tokenizer.model_max_length-1],w) if s<e]
-        while x[-1][0].startswith("I-"):
-          x.pop()
-        if x[-1][0].startswith("B-"):
-          x.pop()
-        t=x[-1][2]
-        if self.tokenizerfast:
-          v=self.tokenizer(sentence[t:],return_offsets_mapping=True)
-        else:
-          v=self.mapping(sentence[t:])
-      w=[self.tagger.config.id2label[q] for q in torch.argmax(self.tagger(torch.tensor([v["input_ids"]]))["logits"],dim=2)[0].tolist()]
-      x+=[[p,s+t,e+t] for (s,e),p in zip(v["offset_mapping"],w) if s<e]
+    with torch.no_grad():
+      if len(v["input_ids"])<self.tokenizer.model_max_length:
+        w=[self.tagger.config.id2label[q] for q in torch.argmax(self.tagger(torch.tensor([v["input_ids"]])).logits,dim=2)[0].tolist()]
+        x=[[p,s,e] for (s,e),p in zip(v["offset_mapping"],w) if s<e]
+      else:
+        t=0
+        x=[]
+        while len(v["input_ids"])>=self.tokenizer.model_max_length:
+          w=[self.tagger.config.id2label[q] for q in torch.argmax(self.tagger(torch.tensor([v["input_ids"][0:self.tokenizer.model_max_length-1]])).logits,dim=2)[0].tolist()]
+          x+=[[p,s+t,e+t] for (s,e),p in zip(v["offset_mapping"][0:self.tokenizer.model_max_length-1],w) if s<e]
+          while x[-1][0].startswith("I-"):
+            x.pop()
+          if x[-1][0].startswith("B-"):
+            x.pop()
+          t=x[-1][2]
+          if self.tokenizerfast:
+            v=self.tokenizer(sentence[t:],return_offsets_mapping=True)
+          else:
+            v=self.mapping(sentence[t:])
+        w=[self.tagger.config.id2label[q] for q in torch.argmax(self.tagger(torch.tensor([v["input_ids"]])).logits,dim=2)[0].tolist()]
+        x+=[[p,s+t,e+t] for (s,e),p in zip(v["offset_mapping"],w) if s<e]
     for i in range(len(x)-1,0,-1):
       if x[i][0].startswith("I-"):
         if x[i-1][0]==x[i][0]:
