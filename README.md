@@ -70,7 +70,7 @@ pip3 install esupar --user
 
 ## Installation for Cygwin64
 
-Make sure to get `python37-devel` `python37-pip` `python37-cython` `python37-numpy` `python37-wheel` `gcc-g++` `mingw64-x86_64-gcc-g++` `git` `curl` `make` `cmake`, and then:
+Make sure to get `python37-devel` `python37-pip` `python37-cython` `python37-numpy` `python37-setuptools` `python37-wheel` `gcc-g++` `mingw64-x86_64-gcc-g++` `git` `curl` `make` `cmake`, and then:
 
 ```sh
 curl -L https://raw.githubusercontent.com/KoichiYasuoka/CygTorch/master/installer/supar.sh | sh
