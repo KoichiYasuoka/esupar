@@ -21,7 +21,7 @@ class UPOSDataset(object):
         if len(w)==10:
           if w[0].isdecimal():
             form.append(w[1])
-            upos.append(w[3] if w[5]=="_" else w[3]+"|"+w[5])
+            upos.append(self.getpos(w))
             nosp.append(w[9].find("SpaceAfter=No")>=0)
           elif w[0].find("-")>0:
             mw.append(w[1])
@@ -120,6 +120,10 @@ class UPOSDataset(object):
     return lid
   __len__=lambda self:len(self.ids)
   __getitem__=lambda self,i:{"input_ids":self.ids[i],"labels":[self.label2id[t] for t in self.upos[i]]}
+  getpos=lambda self,w:w[3]
+
+class UPOSFeatsDataset(UPOSDataset):
+  getpos=lambda self,w:w[3] if w[5]=="_" else w[3]+"|"+w[5]
 
 class UPOSFileDataset(object):
   def __init__(self,conllu,tokenizer):
@@ -240,7 +244,7 @@ def trainer(uposdataset):
     else:
       config.task_specific_params={"upos_multiword":train_dts.multiword}
   model=AutoModelForTokenClassification.from_pretrained(sys.argv[1],config=config)
-  arg=TrainingArguments(per_device_train_batch_size=int(sys.argv[3]),output_dir=sys.argv[4],overwrite_output_dir=True,save_total_limit=2,save_strategy="epoch",evaluation_strategy="epoch" if eval_dts else "no")
+  arg=TrainingArguments(per_device_train_batch_size=abs(int(sys.argv[3])),output_dir=sys.argv[4],overwrite_output_dir=True,save_total_limit=2,save_strategy="epoch",evaluation_strategy="epoch" if eval_dts else "no")
   train=Trainer(model=model,args=arg,train_dataset=train_dts,eval_dataset=eval_dts,data_collator=DataCollatorForTokenClassification(tokenizer))
   train.train()
   train.save_model(sys.argv[2])
@@ -249,7 +253,7 @@ def trainer(uposdataset):
 if __name__=="__main__":
   batch=32
   if len(sys.argv)==5 and sys.argv[4].startswith("batch="):
-    batch=int(sys.argv[4][6:])
+    batch=abs(int(sys.argv[4][6:]))
     sys.argv.pop()
   elif len(sys.argv)==3:
     sys.argv.append(".")
@@ -268,6 +272,8 @@ if __name__=="__main__":
     subprocess.check_output(p)
   elif len(sys.argv)>5 and sys.argv[3].isdecimal():
     trainer(UPOSDataset)
+  elif len(sys.argv)>5 and sys.argv[3].startswith("-"):
+    trainer(UPOSFeatsDataset)
   elif len(sys.argv)>5 and sys.argv[3].startswith("+"):
     trainer(UPOSFileDataset)
   else:
