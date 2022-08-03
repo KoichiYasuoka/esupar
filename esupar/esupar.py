@@ -70,8 +70,7 @@ class Esupar(object):
           m[i-1]+=numpy.nanmax(m[i]+self.labelmatrix,axis=1)
         w=[numpy.nanargmax(m[0])]
         for i in range(1,len(v["offset_mapping"])):
-          m[i]+=self.labelmatrix[w[-1]]
-          w.append(numpy.nanargmax(m[i]))
+          w.append(numpy.nanargmax(m[i]+self.labelmatrix[w[-1]]))
         x=[[self.tagger.config.id2label[p],s,e] for (s,e),p in zip(v["offset_mapping"],w) if s<e]
       else:
         t=0
