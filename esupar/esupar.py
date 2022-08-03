@@ -46,7 +46,10 @@ class Esupar(object):
     d=numpy.array([numpy.nan if x[i].startswith("I-") else 0 for i in range(len(x))])
     for i in range(len(x)):
       if x[i].startswith("B-"):
-        self.labelmatrix[i,self.tagger.config.label2id["I-"+x[i][2:]]]=0
+        try:
+          self.labelmatrix[i,self.tagger.config.label2id["I-"+x[i][2:]]]=0
+        except:
+          self.labelmatrix[i]=0
       else:
         self.labelmatrix[i]=d
         if x[i].startswith("I-"):
