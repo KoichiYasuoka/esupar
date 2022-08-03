@@ -29,7 +29,7 @@ MODELS={
 
 class Esupar(object):
   def __init__(self,model):
-    import os
+    import os,numpy
     from transformers import AutoTokenizer,AutoModelForTokenClassification
     from transformers.file_utils import cached_path,hf_bucket_url
     from supar import Parser
@@ -41,6 +41,16 @@ class Esupar(object):
       self.parser=Parser.load(f)
     else:
       self.parser=Parser.load(cached_path(hf_bucket_url(model,"supar.model")))
+    x=self.tagger.config.id2label
+    self.labelmatrix=numpy.full((len(x),len(x)),numpy.nan)
+    d=numpy.array([numpy.nan if x[i].startswith("I-") else 0 for i in range(len(x))])
+    for i in range(len(x)):
+      if x[i].startswith("B-"):
+        self.labelmatrix[i,self.tagger.config.label2id["I-"+x[i][2:]]]=0
+      else:
+        self.labelmatrix[i]=d
+        if x[i].startswith("I-"):
+          self.labelmatrix[i,i]=0
   def __call__(self,sentence):
     import torch
     if self.tokenizerfast:
@@ -48,9 +58,18 @@ class Esupar(object):
     else:
       v=self.mapping(sentence)
     with torch.no_grad():
-      if len(v["input_ids"])<self.tokenizer.model_max_length:
-        w=[self.tagger.config.id2label[q] for q in torch.argmax(self.tagger(torch.tensor([v["input_ids"]])).logits,dim=2)[0].tolist()]
-        x=[[p,s,e] for (s,e),p in zip(v["offset_mapping"],w) if s<e]
+      if len(v["input_ids"])==0:
+        x=[]
+      elif len(v["input_ids"])<self.tokenizer.model_max_length:
+        import numpy
+        m=self.tagger(torch.tensor([v["input_ids"]])).logits[0].numpy()
+        for i in range(len(v["offset_mapping"])-1,0,-1):
+          m[i-1]+=numpy.nanmax(m[i]+self.labelmatrix,axis=1)
+        w=[numpy.nanargmax(m[0])]
+        for i in range(1,len(v["offset_mapping"])):
+          m[i]+=self.labelmatrix[w[-1]]
+          w.append(numpy.nanargmax(m[i]))
+        x=[[self.tagger.config.id2label[p],s,e] for (s,e),p in zip(v["offset_mapping"],w) if s<e]
       else:
         t=0
         x=[]
