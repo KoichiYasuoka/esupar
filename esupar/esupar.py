@@ -31,8 +31,12 @@ class Esupar(object):
   def __init__(self,model):
     import os,numpy
     from transformers import AutoTokenizer,AutoModelForTokenClassification
-    from transformers.file_utils import cached_path,hf_bucket_url
     from supar import Parser
+    try:
+      from transformers.utils import cached_file
+    except:
+      from transformers.file_utils import cached_path,hf_bucket_url
+      cached_file=lambda x,y:cached_path(hf_bucket_url(x,y))
     self.tokenizer=AutoTokenizer.from_pretrained(model)
     self.tokenizerfast=(str(type(self.tokenizer)).find("TokenizerFast")>0)
     self.tagger=AutoModelForTokenClassification.from_pretrained(model)
@@ -40,7 +44,7 @@ class Esupar(object):
     if os.path.isfile(f):
       self.parser=Parser.load(f)
     else:
-      self.parser=Parser.load(cached_path(hf_bucket_url(model,"supar.model")))
+      self.parser=Parser.load(cached_file(model,"supar.model"))
     x=self.tagger.config.id2label
     self.labelmatrix=numpy.full((len(x),len(x)),numpy.nan)
     d=numpy.array([numpy.nan if x[i].startswith("I-") else 0 for i in range(len(x))])
