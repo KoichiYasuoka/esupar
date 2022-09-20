@@ -2,6 +2,10 @@
 
 # esupar
 
+<p>
+<a href="https://console.tiyaro.ai/explore/KoichiYasuoka-bert-base-japanese-upos"> <img src="https://tiyaro-public-docs.s3.us-west-2.amazonaws.com/assets/try_on_tiyaro_badge.svg"></a>
+</p>
+
 Tokenizer, POS-tagger, and dependency-parser with [Transformers](https://huggingface.co/transformers/) and [SuPar](https://pypi.org/project/supar/).
 
 ## Basic usage
