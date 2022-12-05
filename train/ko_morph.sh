@@ -15,6 +15,8 @@ BEGIN{
         else if($5!="XSV")
           $8="mark";
       }
+      else if($4=="CCONJ")
+        $8=($5=="JC")?"cc":"mark";
       else if($5=="VCP")
         $8="cop";
     }
