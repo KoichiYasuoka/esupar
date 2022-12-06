@@ -4,7 +4,7 @@ test -d morphUD-korean || git clone --depth=1 https://github.com/jungyeul/morphU
 for F in train dev test
 do nawk '
 BEGIN{
-  IFS=OFS="\t";
+  FS=OFS="\t";
 }
 {
   if(NF==10){
