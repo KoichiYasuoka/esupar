@@ -8,8 +8,6 @@ BEGIN{
 }
 {
   if(NF==10){
-    if($1~/-/)
-      next;
     if($8=="aux"){
       if($4=="PART"){
         if($5=="XSN")
