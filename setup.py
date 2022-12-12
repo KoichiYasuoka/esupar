@@ -5,7 +5,7 @@ URL="https://github.com/KoichiYasuoka/esupar"
 
 setuptools.setup(
   name="esupar",
-  version="1.4.1",
+  version="1.4.2",
   description="Tokenizer POS-tagger and Dependency-parser with BERT/RoBERTa/DeBERTa models for Japanese and other languages",
   long_description=long_description,
   long_description_content_type="text/markdown",
@@ -13,7 +13,7 @@ setuptools.setup(
   author="Koichi Yasuoka",
   author_email="yasuoka@kanji.zinbun.kyoto-u.ac.jp",
   license="MIT",
-  keywords="NLP Japanese Korean Chinese Thai English German Serbian Coptic",
+  keywords="NLP Japanese Korean Chinese Thai Vietnamese English German Serbian Coptic",
   packages=setuptools.find_packages(),
   install_requires=[
     "supar>=1.1.4",
@@ -30,6 +30,7 @@ setuptools.setup(
     "Natural Language :: Chinese (Simplified)",
     "Natural Language :: Chinese (Traditional)",
     "Natural Language :: Thai",
+    "Natural Language :: Vietnamese",
     "Natural Language :: English",
     "Natural Language :: German",
     "Natural Language :: Serbian",
