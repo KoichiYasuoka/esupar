@@ -27,6 +27,7 @@ MODELS={
   "lzh_large":"KoichiYasuoka/roberta-classical-chinese-large-upos",
   "sr":"KoichiYasuoka/roberta-base-serbian-upos",
   "th":"KoichiYasuoka/roberta-base-thai-spm-upos",
+  "vi":"KoichiYasuoka/bert-base-vietnamese-upos",
   "zh":"KoichiYasuoka/chinese-bert-wwm-ext-upos",
   "zh_bert":"KoichiYasuoka/chinese-bert-wwm-ext-upos",
   "zh_base":"KoichiYasuoka/chinese-roberta-base-upos",
