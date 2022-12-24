@@ -33,9 +33,15 @@ MODELS={
   "zh_base":"KoichiYasuoka/chinese-roberta-base-upos",
   "zh_large":"KoichiYasuoka/chinese-roberta-large-upos"
 }
+LEMMATIZE={
+  "lzh":"tradify","lzh_base":"tradify","lzh_large":"tradify",
+  "th":"copy",
+  "vi":"copy",
+  "zh":"copy","zh_bert":"copy","zh_base":"copy","zh_large":"copy"
+}
 
 class Esupar(object):
-  def __init__(self,model):
+  def __init__(self,model,lemma=None):
     import os,numpy
     from transformers import AutoTokenizer,AutoModelForTokenClassification
     from supar import Parser
@@ -65,6 +71,23 @@ class Esupar(object):
         self.labelmatrix[i]=d
         if x[i].startswith("I-"):
           self.labelmatrix[i,i]=0
+    if lemma=="copy":
+      self.lemma=lambda x:x
+    elif lemma=="tradify":
+      from esupar.tradify import tradify
+      self.lemma=lambda x:"".join(tradify[c] if c in tradify else c for c in x)
+    elif lemma=="simplify":
+      from esupar.simplify import simplify
+      self.lemma=lambda x:"".join(simplify[c] if c in simplify else c for c in x)
+    elif lemma=="hangul":
+      from esupar.hangul import hangul
+      self.hangul={}
+      for k,v in hangul.items():
+        for c in "".join(v).replace("(","").replace(")",""):
+          self.hangul[c]=k
+      self.lemma=lambda x:"".join(self.hangul[c] if c in self.hangul else c for c in x)
+    else:
+      self.lemma=lambda x:"_"
   def __call__(self,sentence):
     import torch
     if self.tokenizerfast:
@@ -128,6 +151,7 @@ class Esupar(object):
     if ".".join(p for p,s,e in x).find("+")<0:
       d=self.parser.predict([[sentence[s:e] for p,s,e in x]]).sentences[0]
       v=[p.split("|") for p,s,e in x]
+      d.values[2]=tuple([self.lemma(f) for f in d.values[1]])
       d.values[3]=tuple([p[0] for p in v])
       d.values[5]=tuple(["_" if len(p)<2 else "|".join(p[1:]) for p in v])
       d.values[9]=tuple(["SpaceAfter=No" if e==s else "_" for (_,_,e),(_,s,_) in zip(x,x[1:])]+["SpaceAfter=No"])
@@ -170,6 +194,7 @@ class Esupar(object):
             d.values[i]=tuple(x[0:s-1]+[z]+x[s-1:])
           else:
             d.values[i]=tuple(x[0:s-1]+["_"]+x[s-1:])
+      d.values[2]=tuple([self.lemma(f) for f in d.values[1]])
     return d
   def mapping(self,sentence):
     import tokenizations
@@ -190,8 +215,10 @@ class Esupar(object):
     v["offset_mapping"]=w
     return v
 
-def load(model="ja"):
+def load(model="ja",lemma=None):
+  if lemma==None and model in LEMMATIZE:
+    lemma=LEMMATIZE[model]
   if model in MODELS:
     model=MODELS[model]
-  return Esupar(model)
+  return Esupar(model,lemma)
 
