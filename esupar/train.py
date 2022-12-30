@@ -238,13 +238,10 @@ def trainer(uposdataset):
     test_dts=uposdataset(sys.argv[7],tokenizer)
     label2id=train_dts(eval_dts,test_dts)
   config=AutoConfig.from_pretrained(sys.argv[1],num_labels=len(label2id),label2id=label2id,id2label={i:l for l,i in label2id.items()},ignore_mismatched_sizes=True)
-  if train_dts.multiword!={}:
-    if config.task_specific_params:
-      config.task_specific_params["upos_multiword"]=train_dts.multiword
-    else:
-      config.task_specific_params={"upos_multiword":train_dts.multiword}
-  elif config.task_specific_params:
-    config.task_specific_params["upos_multiword"]={}
+  if config.task_specific_params:
+    config.task_specific_params["upos_multiword"]=train_dts.multiword
+  elif train_dts.multiword!={}:
+    config.task_specific_params={"upos_multiword":train_dts.multiword}
   model=AutoModelForTokenClassification.from_pretrained(sys.argv[1],config=config,ignore_mismatched_sizes=True)
   arg=TrainingArguments(per_device_train_batch_size=abs(int(sys.argv[3])),output_dir=sys.argv[4],overwrite_output_dir=True,save_total_limit=2,save_strategy="epoch",evaluation_strategy="epoch" if eval_dts else "no")
   train=Trainer(model=model,args=arg,train_dataset=train_dts,eval_dataset=eval_dts,data_collator=DataCollatorForTokenClassification(tokenizer))
