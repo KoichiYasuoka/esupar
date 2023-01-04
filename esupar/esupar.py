@@ -148,7 +148,7 @@ class Esupar(object):
     for i in range(0,len(x)):
       if x[i][0].startswith("B-") or x[i][0].startswith("I-"):
         x[i][0]=x[i][0][2:]
-    if ".".join(p for p,s,e in x).find("+")<0:
+    if ".".join(p for p,_,_ in x).find("+")<0 and [1 for (_,_,e),(_,s,_) in zip(x,x[1:]) if e>s]==[]:
       d=self.parser.predict([[sentence[s:e] for p,s,e in x]]).sentences[0]
       v=[p.split("|") for p,s,e in x]
       d.values[2]=tuple([self.lemma(f) for f in d.values[1]])
@@ -165,6 +165,12 @@ class Esupar(object):
         t=sentence[s:e]
         if p.find("+")<0:
           v.append((t,p,"_" if i+1<len(x) and e<x[i+1][1] else "SpaceAfter=No"))
+          if i+1<len(x) and e>x[i+1][1]:
+            if i==0 or s>=x[i-1][2]:
+              j=i+1
+              while j+1<len(x) and x[j][2]>x[j+1][1]:
+                j=j+1
+              m.append((i+1,j+1,sentence[s:x[j][2]],"_" if j+1<len(x) and x[j][2]<x[j+1][1] else "SpaceAfter=No"))
         else:
           q=p.split("+")
           w=[t]+["_"]*len(q)
