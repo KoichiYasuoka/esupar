@@ -153,7 +153,8 @@ class Esupar(object):
       v=[p.split("|") for p,s,e in x]
       d.values[2]=tuple([self.lemma(f) for f in d.values[1]])
       d.values[3]=tuple([p[0] for p in v])
-      d.values[5]=tuple(["_" if len(p)<2 else "|".join(p[1:]) for p in v])
+      d.values[4]=tuple(["_" if len(p)<2 or p[1].find("=")>0 else p[1] for p in v])
+      d.values[5]=tuple(["|".join([f for f in p if f.find("=")>0]+["_"]).replace("|_","") for p in v])
       d.values[9]=tuple(["SpaceAfter=No" if e==s else "_" for (_,_,e),(_,s,_) in zip(x,x[1:])]+["SpaceAfter=No"])
     else:
       try:
@@ -187,7 +188,8 @@ class Esupar(object):
       d=self.parser.predict([[t for t,p,z in v]]).sentences[0]
       x=[p.split("|") for t,p,z in v]
       d.values[3]=tuple([p[0] for p in x])
-      d.values[5]=tuple(["_" if len(p)<2 else "|".join(p[1:]) for p in x])
+      d.values[4]=tuple(["_" if len(p)<2 or p[1].find("=")>0 else p[1] for p in x])
+      d.values[5]=tuple(["|".join([f for f in p if f.find("=")>0]+["_"]).replace("|_","") for p in x])
       d.values[9]=tuple([z for t,p,z in v])
       for s,e,t,z in reversed(m):
         for i in range(10):
