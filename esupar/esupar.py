@@ -174,9 +174,12 @@ class Esupar(object):
               m.append((i+1,j+1,sentence[s:x[j][2]],"_" if j+1<len(x) and x[j][2]<x[j+1][1] else "SpaceAfter=No"))
         else:
           q=p.split("+")
-          w=[t]+["_"]*len(q)
           if p in c and t in c[p]:
             w=c[p][t]+["_"]*len(q)
+          else:
+            w=[t]+["_"]*len(q)
+            if len(t)>len(q):
+              w=[t[0:1-len(q)]]+[c for c in t[1-len(q):]]+["_"]*len(q)
           if t=="".join(w[0:len(q)]):
             for j,k in zip(w,q):
               v.append((j,k,"SpaceAfter=No"))
