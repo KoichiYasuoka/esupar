@@ -86,10 +86,13 @@ class Esupar(object):
         for c in "".join(v).replace("(","").replace(")",""):
           self.hangul[c]=k
       self.lemma=lambda x:"".join(self.hangul[c] if c in self.hangul else c for c in x)
+    elif lemma=="ainu":
+      from esupar.ainu import Lemmatize
+      self.lemma=Lemmatize()
     else:
       self.lemma=lambda x:"_"
   def __call__(self,sentence):
-    import torch
+    import torch,unicodedata
     if self.tokenizerfast:
       v=self.tokenizer(sentence,return_offsets_mapping=True)
     else:
@@ -149,7 +152,7 @@ class Esupar(object):
       if x[i][0].startswith("B-") or x[i][0].startswith("I-"):
         x[i][0]=x[i][0][2:]
     if ".".join(p for p,_,_ in x).find("+")<0 and [1 for (_,_,e),(_,s,_) in zip(x,x[1:]) if e>s]==[]:
-      d=self.parser.predict([[sentence[s:e] for p,s,e in x]]).sentences[0]
+      d=self.parser.predict([[sentence[s-1:e] if unicodedata.category(sentence[s])=="Mn" else sentence[s:e] for p,s,e in x]]).sentences[0]
       v=[p.split("|") for p,s,e in x]
       d.values[2]=tuple([self.lemma(f) for f in d.values[1]])
       d.values[3]=tuple([p[0] for p in v])
@@ -165,13 +168,24 @@ class Esupar(object):
       for i,(p,s,e) in enumerate(x):
         t=sentence[s:e]
         if p.find("+")<0:
-          v.append((t,p,"_" if i+1<len(x) and e<x[i+1][1] else "SpaceAfter=No"))
           if i+1<len(x) and e>x[i+1][1]:
+            try:
+              j,k=self.lemma.divide(sentence[x[i+1][1]:e])
+              t=sentence[s:x[i+1][1]]+j
+            except:
+              pass
             if i==0 or s>=x[i-1][2]:
               j=i+1
               while j+1<len(x) and x[j][2]>x[j+1][1]:
                 j=j+1
               m.append((i+1,j+1,sentence[s:x[j][2]],"_" if j+1<len(x) and x[j][2]<x[j+1][1] else "SpaceAfter=No"))
+          if i>0 and s<x[i-1][2]:
+            try:
+              j,k=self.lemma.divide(sentence[s:x[i-1][2]])
+              t=k+t[x[i-1][2]-s:]
+            except:
+              pass
+          v.append((t,p,"_" if i+1<len(x) and e<x[i+1][1] else "SpaceAfter=No"))
         else:
           q=p.split("+")
           if p in c and t in c[p]:
