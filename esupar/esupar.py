@@ -203,6 +203,7 @@ class Esupar(object):
             for j,k in zip(w,q):
               v.append((j,k,"_"))
       d=self.parser.predict([[t for t,p,z in v]]).sentences[0]
+      d.values[2]=tuple([self.lemma(f) for f in d.values[1]])
       x=[p.split("|") for t,p,z in v]
       d.values[3]=tuple([p[0] for p in x])
       d.values[4]=tuple(["_" if len(p)<2 or p[1].find("=")>0 else p[1] for p in x])
@@ -219,7 +220,6 @@ class Esupar(object):
             d.values[i]=tuple(x[0:s-1]+[z]+x[s-1:])
           else:
             d.values[i]=tuple(x[0:s-1]+["_"]+x[s-1:])
-      d.values[2]=tuple([self.lemma(f) for f in d.values[1]])
     return d
   def mapping(self,sentence):
     import tokenizations
