@@ -2,6 +2,7 @@
 # coding=utf-8
 
 MODELS={
+  "ain":"KoichiYasuoka/deberta-base-ainu-upos",
   "cop":"KoichiYasuoka/roberta-base-coptic-upos",
   "de":"KoichiYasuoka/bert-base-german-upos",
   "de_base":"KoichiYasuoka/bert-base-german-upos",
@@ -34,6 +35,7 @@ MODELS={
   "zh_large":"KoichiYasuoka/chinese-roberta-large-upos"
 }
 LEMMATIZE={
+  "ain":"ainu",
   "lzh":"tradify","lzh_base":"tradify","lzh_large":"tradify",
   "th":"copy",
   "vi":"copy",

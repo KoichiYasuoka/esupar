@@ -66,6 +66,7 @@ Tokenizer, POS-tagger, and dependency-parser with [Transformers](https://hugging
 * `model="de_large"` German model [bert-large-german-upos](https://huggingface.co/KoichiYasuoka/bert-large-german-upos)
 * `model="sr"` Serbian (Cyrillic and Latin) model [roberta-base-serbian-upos](https://huggingface.co/KoichiYasuoka/roberta-base-serbian-upos)
 * `model="cop"` Coptic model [roberta-base-coptic-upos](https://huggingface.co/KoichiYasuoka/roberta-base-coptic-upos)
+* `model="ain"` Ainu model [deberta-base-ainu-upos](https://huggingface.co/KoichiYasuoka/deberta-base-ainu-upos)
 
 ## Installation for Linux
 
