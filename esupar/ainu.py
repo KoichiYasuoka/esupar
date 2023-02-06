@@ -150,8 +150,8 @@ cyrillic={
 class Lemmatize(object):
   def __init__(self):
     self.dict={**katakana,**cyrillic}
-    self.rev_katakana={v:k for k,v in reversed(katakana.items())}
-    self.rev_cyrillic={v:k for k,v in reversed(cyrillic.items())}
+    self.rev_katakana={v:k for k,v in reversed(list(katakana.items()))}
+    self.rev_cyrillic={v:k for k,v in reversed(list(cyrillic.items()))}
   def __call__(self,text):
     return "".join(self.dict[c] if c in self.dict else c for c in text.replace("ㇷ゚","p").lower())
   def divide(self,text):
