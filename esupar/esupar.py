@@ -168,7 +168,7 @@ class Esupar(object):
         c={}
       v,m=[],[]
       for i,(p,s,e) in enumerate(x):
-        t=sentence[s:e]
+        t=sentence[s-1:e] if unicodedata.category(sentence[s])=="Mn" else sentence[s:e]
         if p.find("+")<0:
           if i+1<len(x) and e>x[i+1][1]:
             try:
