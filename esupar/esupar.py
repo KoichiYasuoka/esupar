@@ -166,7 +166,7 @@ class Esupar(object):
         c=self.tagger.config.task_specific_params["upos_multiword"]
       except:
         c={}
-      v,m=[],[]
+      v,m,d=[],[],1
       for i,(p,s,e) in enumerate(x):
         t=sentence[s-1:e] if unicodedata.category(sentence[s])=="Mn" else sentence[s:e]
         if p.find("+")<0:
@@ -180,7 +180,7 @@ class Esupar(object):
               j=i+1
               while j+1<len(x) and x[j][2]>x[j+1][1]:
                 j=j+1
-              m.append((i+1,j+1,sentence[s:x[j][2]],"_" if j+1<len(x) and x[j][2]<x[j+1][1] else "SpaceAfter=No"))
+              m.append((i+d,j+d,sentence[s:x[j][2]],"_" if j+1<len(x) and x[j][2]<x[j+1][1] else "SpaceAfter=No"))
           if i>0 and s<x[i-1][2]:
             try:
               j,k=self.lemma.divide(sentence[s:x[i-1][2]])
@@ -190,6 +190,7 @@ class Esupar(object):
           v.append((t,p,"_" if i+1<len(x) and e<x[i+1][1] else "SpaceAfter=No"))
         else:
           q=p.split("+")
+          d+=len(q)-1
           if p in c and t in c[p]:
             w=c[p][t]+["_"]*len(q)
           else:
