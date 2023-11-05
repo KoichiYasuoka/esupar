@@ -13,7 +13,10 @@ class UPOSDataset(object):
     try:
       from tokenizations import get_alignments
     except:
-      get_alignments=None
+      try:
+        from spacy_alignments import get_alignments
+      except:
+        get_alignments=None
     with open(conllu,"r",encoding="utf-8") as f:
       form,upos,nosp,mw,mwid,text=[],[],[False],[],[],None
       for t in f:

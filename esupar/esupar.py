@@ -225,7 +225,10 @@ class Esupar(object):
             d.values[i]=tuple(x[0:s-1]+["_"]+x[s-1:])
     return d
   def mapping(self,sentence):
-    import tokenizations
+    try:
+      import tokenizations
+    except:
+      import spacy_alignments as tokenizations
     v=self.tokenizer(sentence)
     a=v["input_ids"]
     x,y=tokenizations.get_alignments(self.tokenizer.convert_ids_to_tokens(a),sentence)
