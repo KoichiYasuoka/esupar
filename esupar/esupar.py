@@ -54,6 +54,14 @@ class Esupar(object):
       cached_file=lambda x,y:cached_path(hf_bucket_url(x,y))
     self.tokenizer=AutoTokenizer.from_pretrained(model)
     self.tokenizerfast=(str(type(self.tokenizer)).find("TokenizerFast")>0)
+    if not self.tokenizerfast:
+      try:
+        if self.tokenizer.word_tokenizer_type=="mecab":
+          from esupar.mecab import BertMecabTokenizerFast
+          self.tokenizer=BertMecabTokenizerFast.from_pretrained(model)
+          self.tokenizerfast=True
+      except:
+        pass
     self.tagger=AutoModelForTokenClassification.from_pretrained(model)
     f=os.path.join(model,"supar.model")
     if os.path.isfile(f):
