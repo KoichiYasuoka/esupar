@@ -162,7 +162,7 @@ class Esupar(object):
       if x[i][0].startswith("B-") or x[i][0].startswith("I-"):
         x[i][0]=x[i][0][2:]
     if ".".join(p for p,_,_ in x).find("+")<0 and [1 for (_,_,e),(_,s,_) in zip(x,x[1:]) if e>s]==[]:
-      d=self.parser.predict([[sentence[s-1:e] if unicodedata.category(sentence[s])=="Mn" else sentence[s:e] for p,s,e in x]]).sentences[0]
+      d=self.parser.predict([[(sentence[s-1:e] if unicodedata.category(sentence[s])=="Mn" else sentence[s:e]).replace("\n"," ") for p,s,e in x]]).sentences[0]
       v=[p.split("|") for p,s,e in x]
       d.values[2]=tuple([self.lemma(f) for f in d.values[1]])
       d.values[3]=tuple([p[0] for p in v])
@@ -213,7 +213,7 @@ class Esupar(object):
             m.append((len(v)+1,len(v)+len(q),t,"_" if i+1<len(x) and e<x[i+1][1] else "SpaceAfter=No"))
             for j,k in zip(w,q):
               v.append((j,k,"_"))
-      d=self.parser.predict([[t for t,p,z in v]]).sentences[0]
+      d=self.parser.predict([[t.replace("\n"," ") for t,p,z in v]]).sentences[0]
       d.values[2]=tuple([self.lemma(f) for f in d.values[1]])
       x=[p.split("|") for t,p,z in v]
       d.values[3]=tuple([p[0] for p in x])
