@@ -19,6 +19,12 @@ BEGIN{
   print;
 }' UD_Korean-*/*-$F.conllu > $F.conllu
 done
-python3 -m esupar.train KoichiYasuoka/roberta-base-korean-hanja KoichiYasuoka/roberta-base-korean-upos .
-python3 -m esupar.train KoichiYasuoka/roberta-large-korean-hanja KoichiYasuoka/roberta-large-korean-upos .
+test -d seonbi || git clone --depth=1 https://github.com/dahlia/seonbi
+awk '{printf("%s\n",substr($1,1,length($2)))}' seonbi/data/ko-kr-stdict.tsv  | sort -u | awk '{printf("1\t%s\t_\tNOUN\t_\t_\t_\t_\t_\t_\n\n",$1)}' > hanja.upos
+python3 -m esupar.train KoichiYasuoka/roberta-base-korean-hanja tmpdir 256 /tmp hanja.upos
+python3 -m esupar.train tmpdir KoichiYasuoka/roberta-base-korean-upos .
+python3 -m esupar.train KoichiYasuoka/roberta-large-korean-hanja tmpdir 256 /tmp hanja.upos
+python3 -m esupar.train tmpdir KoichiYasuoka/roberta-large-korean-upos .
+python3 -m esupar.train team-lucid/deberta-v3-base-korean tmpdir 256 /tmp hanja.upos
+python3 -m esupar.train tmpdir KoichiYasuoka/deberta-base-korean-upos
 exit 0
