@@ -1,5 +1,5 @@
 #! /bin/sh
-pip3 install -U esupar pytokenizations
+pip3 install -U esupar spacy-alignments
 test -d morphUD-korean || git clone --depth=1 https://github.com/jungyeul/morphUD-korean
 for F in train dev test
 do nawk '
@@ -20,10 +20,15 @@ BEGIN{
       else if($5=="VCP")
         $8="cop";
     }
+    else if($4=="ADP"){
+      if($8~/^(nsubj|obj)$/)
+        $8="case";
+    }
   }
   print;
 }' morphUD-korean/data/ko_gsd-ud-$F-morph.conllu > $F.conllu
 done
-python3 -m esupar.train KoichiYasuoka/roberta-base-korean-hanja KoichiYasuoka/roberta-base-korean-morph-upos .
-python3 -m esupar.train KoichiYasuoka/roberta-large-korean-hanja KoichiYasuoka/roberta-large-korean-morph-upos .
+python3 -m esupar.train KoichiYasuoka/roberta-base-korean-upos KoichiYasuoka/roberta-base-korean-morph-upos .
+python3 -m esupar.train KoichiYasuoka/roberta-large-korean-upos KoichiYasuoka/roberta-large-korean-morph-upos .
+python3 -m esupar.train KoichiYasuoka/deberta-base-korean-upos KoichiYasuoka/deberta-base-korean-morph-upos .
 exit 0
