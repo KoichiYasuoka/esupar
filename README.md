@@ -58,7 +58,7 @@ Tokenizer, POS-tagger, and dependency-parser with [Transformers](https://hugging
 * `model="zh_large"` Chinese model [chinese-roberta-large-upos](https://huggingface.co/KoichiYasuoka/chinese-roberta-large-upos)
 * `model="lzh"` Classical Chinese model [roberta-classical-chinese-base-upos](https://huggingface.co/KoichiYasuoka/roberta-classical-chinese-base-upos)
 * `model="lzh_large"` Classical Chinese model [roberta-classical-chinese-large-upos](https://huggingface.co/KoichiYasuoka/roberta-classical-chinese-large-upos)
-* `model="th"` Thai model [roberta-base-thai-spm-upos](https://huggingface.co/KoichiYasuoka/roberta-base-thai-spm-upos)
+* `model="th"` Thai model [deberta-base-thai-upos](https://huggingface.co/KoichiYasuoka/deberta-base-thai-upos)
 * `model="vi"` Vietnamese model [bert-base-vietnamese-upos](https://huggingface.co/KoichiYasuoka/bert-base-vietnamese-upos)
 * `model="en"` English model [roberta-base-english-upos](https://huggingface.co/KoichiYasuoka/roberta-base-english-upos)
 * `model="en_large"` English model [roberta-large-english-upos](https://huggingface.co/KoichiYasuoka/roberta-large-english-upos)
