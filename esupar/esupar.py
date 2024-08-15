@@ -165,7 +165,7 @@ class Esupar(object):
       d=self.parser.predict([[(sentence[s-1:e] if unicodedata.category(sentence[s])=="Mn" else sentence[s:e]).replace("\n"," ") for p,s,e in x]]).sentences[0]
       v=[p.split("|") for p,s,e in x]
       d.values[2]=tuple([self.lemma(f) for f in d.values[1]])
-      d.values[3]=tuple([p[0] for p in v])
+      d.values[3]=tuple(["AUX" if q in {"aux","cop"} and p[0] in {"VERB","ADJ","ADV"} else p[0] for p,q in zip(v,d.values[7])])
       d.values[4]=tuple(["_" if len(p)<2 or p[1].find("=")>0 else p[1] for p in v])
       d.values[5]=tuple(["|".join([f for f in p if f.find("=")>0]+["_"]).replace("|_","") for p in v])
       d.values[9]=tuple(["SpaceAfter=No" if e==s else "_" for (_,_,e),(_,s,_) in zip(x,x[1:])]+["SpaceAfter=No"])
@@ -216,7 +216,7 @@ class Esupar(object):
       d=self.parser.predict([[t.replace("\n"," ") for t,p,z in v]]).sentences[0]
       d.values[2]=tuple([self.lemma(f) for f in d.values[1]])
       x=[p.split("|") for t,p,z in v]
-      d.values[3]=tuple([p[0] for p in x])
+      d.values[3]=tuple(["AUX" if q in {"aux","cop"} and p[0] in {"VERB","ADJ","ADV"} else p[0] for p,q in zip(x,d.values[7])])
       d.values[4]=tuple(["_" if len(p)<2 or p[1].find("=")>0 else p[1] for p in x])
       d.values[5]=tuple(["|".join([f for f in p if f.find("=")>0]+["_"]).replace("|_","") for p in x])
       d.values[9]=tuple([z for t,p,z in v])
