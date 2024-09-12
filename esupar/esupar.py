@@ -162,7 +162,14 @@ class Esupar(object):
       if x[i][0].startswith("B-") or x[i][0].startswith("I-"):
         x[i][0]=x[i][0][2:]
     if ".".join(p for p,_,_ in x).find("+")<0 and [1 for (_,_,e),(_,s,_) in zip(x,x[1:]) if e>s]==[]:
-      d=self.parser.predict([[(sentence[s-1:e] if unicodedata.category(sentence[s])=="Mn" else sentence[s:e]).replace("\n"," ") for p,s,e in x]]).sentences[0]
+      v=[]
+      for p,s,e in x:
+        if unicodedata.category(sentence[s])=="Mn" and v!=[]:
+          v[-1]=v[-1][0:-1]
+          v.append(sentence[s-1:e].replace("\n"," "))
+        else:
+          v.append(sentence[s:e].replace("\n"," "))
+      d=self.parser.predict([v]).sentences[0]
       v=[p.split("|") for p,s,e in x]
       d.values[2]=tuple([self.lemma(f) for f in d.values[1]])
       d.values[3]=tuple(["AUX" if q in {"aux","cop"} and p[0] in {"VERB","ADJ","ADV"} else p[0] for p,q in zip(v,d.values[7])])
