@@ -5,6 +5,7 @@ import os,sys,subprocess,tempfile
 
 class UPOSDataset(object):
   def __init__(self,conllu,tokenizer):
+    self.tokenizer=tokenizer
     self.tokenizerfast=(str(type(tokenizer)).find("TokenizerFast")>0)
     self.ids=[]
     self.upos=[]
@@ -122,7 +123,7 @@ class UPOSDataset(object):
       t.label2id=lid
     return lid
   __len__=lambda self:len(self.ids)
-  __getitem__=lambda self,i:{"input_ids":self.ids[i],"labels":[self.label2id[t] for t in self.upos[i]]}
+  __getitem__=lambda self,i:{"input_ids":self.ids[i][0:self.tokenizer.model_max_length],"labels":[self.label2id[t] for t in self.upos[i][0:self.tokenizer.model_max_length]]}
   getpos=lambda self,w:w[3]
 
 class UPOSFeatsDataset(UPOSDataset):
@@ -245,6 +246,10 @@ def trainer(uposdataset):
     config.task_specific_params["upos_multiword"]=train_dts.multiword
   elif train_dts.multiword!={}:
     config.task_specific_params={"upos_multiword":train_dts.multiword}
+  if tokenizer.model_max_length:
+    tokenizer.model_max_length=min(tokenizer.model_max_length,config.max_position_embeddings)
+  else:
+    tokenizer.model_max_length=config.max_position_embeddings
   model=AutoModelForTokenClassification.from_pretrained(sys.argv[1],config=config,ignore_mismatched_sizes=True)
   arg=TrainingArguments(per_device_train_batch_size=abs(int(sys.argv[3])),output_dir=sys.argv[4],overwrite_output_dir=True,save_total_limit=2,save_strategy="epoch",evaluation_strategy="epoch" if eval_dts else "no",save_safetensors=False)
   train=Trainer(model=model,args=arg,train_dataset=train_dts,eval_dataset=eval_dts,data_collator=DataCollatorForTokenClassification(tokenizer))
