@@ -64,7 +64,8 @@ Tokenizer, POS-tagger, and dependency-parser with [Transformers](https://hugging
 * `model="en_large"` English model [roberta-large-english-upos](https://huggingface.co/KoichiYasuoka/roberta-large-english-upos)
 * `model="de"` German model [bert-base-german-upos](https://huggingface.co/KoichiYasuoka/bert-base-german-upos)
 * `model="de_large"` German model [bert-large-german-upos](https://huggingface.co/KoichiYasuoka/bert-large-german-upos)
-* `model="sr"` Serbian (Cyrillic and Latin) model [roberta-base-serbian-upos](https://huggingface.co/KoichiYasuoka/roberta-base-serbian-upos)
+* `model="sr"` Serbian (Cyrillic and Latin) model [gpt2-small-serbian-upos](https://huggingface.co/KoichiYasuoka/gpt2-small-serbian-upos)
+* `model="sr_large"` Serbian (Cyrillic and Latin) model [gpt2-large-serbian-upos](https://huggingface.co/KoichiYasuoka/gpt2-large-serbian-upos)
 * `model="cop"` Coptic model [roberta-base-coptic-upos](https://huggingface.co/KoichiYasuoka/roberta-base-coptic-upos)
 * `model="ain"` Ainu model [roberta-base-ainu-upos](https://huggingface.co/KoichiYasuoka/roberta-base-ainu-upos)
 
