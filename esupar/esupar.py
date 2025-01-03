@@ -35,13 +35,6 @@ MODELS={
   "zh_base":"KoichiYasuoka/chinese-roberta-base-upos",
   "zh_large":"KoichiYasuoka/chinese-roberta-large-upos"
 }
-LEMMATIZE={
-  "ain":"ainu",
-  "lzh":"tradify","lzh_base":"tradify","lzh_large":"tradify",
-  "th":"copy",
-  "vi":"copy",
-  "zh":"copy","zh_bert":"copy","zh_base":"copy","zh_large":"copy"
-}
 
 class Esupar(object):
   def __init__(self,model,lemma=None):
@@ -82,6 +75,11 @@ class Esupar(object):
         self.labelmatrix[i]=d
         if x[i].startswith("I-"):
           self.labelmatrix[i,i]=0
+    if not lemma in {"copy","tradify","simplify","hangul","ainu","none"}:
+      try:
+        lemma=self.tagger.config.task_specific_params["esupar_lemmatize"]
+      except:
+        pass
     if lemma=="copy":
       self.lemma=lambda x:x
     elif lemma=="tradify":
@@ -263,8 +261,6 @@ class Esupar(object):
     return v
 
 def load(model="ja",lemma=None):
-  if lemma==None and model in LEMMATIZE:
-    lemma=LEMMATIZE[model]
   if model in MODELS:
     model=MODELS[model]
   return Esupar(model,lemma)
