@@ -40,7 +40,7 @@ class Esupar(object):
   def __init__(self,model,lemma=None):
     import os,numpy
     from transformers import AutoTokenizer,AutoModelForTokenClassification
-    from supar import Parser
+    from esupar.supar import Parser
     try:
       from transformers.utils import cached_file
     except:
