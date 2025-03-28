@@ -251,7 +251,7 @@ def trainer(uposdataset):
   else:
     tokenizer.model_max_length=config.max_position_embeddings
   model=AutoModelForTokenClassification.from_pretrained(sys.argv[1],config=config,ignore_mismatched_sizes=True)
-  arg=TrainingArguments(per_device_train_batch_size=abs(int(sys.argv[3])),output_dir=sys.argv[4],overwrite_output_dir=True,save_total_limit=2,save_strategy="epoch",evaluation_strategy="epoch" if eval_dts else "no",save_safetensors=False)
+  arg=TrainingArguments(per_device_train_batch_size=abs(int(sys.argv[3])),output_dir=sys.argv[4],overwrite_output_dir=True,save_total_limit=2,save_strategy="epoch",evaluation_strategy="epoch" if eval_dts else "no",save_safetensors=False,report_to="none")
   train=Trainer(model=model,args=arg,train_dataset=train_dts,eval_dataset=eval_dts,data_collator=DataCollatorForTokenClassification(tokenizer))
   train.train()
   train.save_model(sys.argv[2])
