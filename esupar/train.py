@@ -271,7 +271,7 @@ if __name__=="__main__":
   elif len(sys.argv)==8 and sys.argv[4]=="///":
     import torch
     from transformers import AutoTokenizer
-    p=["biaffine-dep","train","-c","biaffine-dep-en","-b"]
+    p=["esupar-biaffine","train","-c","biaffine-dep-en","-b"]
     if torch.cuda.is_available():
       p+=["-d","0"]
     tokenizer=AutoTokenizer.from_pretrained(sys.argv[1])

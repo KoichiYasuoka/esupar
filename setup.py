@@ -21,6 +21,11 @@ setuptools.setup(
     "deplacy>=2.1.0"
   ],
   python_requires=">=3.7",
+  entry_points={
+    "console_scripts":[
+      "esupar-biaffine=esupar.supar.cmds.biaffine_dep:main",
+    ],
+  },
   classifiers=[
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
