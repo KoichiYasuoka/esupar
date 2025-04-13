@@ -62,6 +62,12 @@ class Esupar(object):
       self.parser=Parser.load(f)
     else:
       self.parser=Parser.load(cached_file(model,"supar.model"))
+    try:
+      for x in self.parser.transform.flattened_fields:
+        if x.fn:
+          x.fn=lambda t:" "+t
+    except:
+      pass
     x=self.tagger.config.id2label
     self.labelmatrix=numpy.full((len(x),len(x)),numpy.nan)
     d=numpy.array([numpy.nan if x[i].startswith("I-") else 0 for i in range(len(x))])
