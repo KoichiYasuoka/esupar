@@ -191,7 +191,14 @@ class Parser(object):
 
         args = Config(**locals())
         args.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        state = torch.load(path if os.path.exists(path) else download(supar.MODEL[src].get(path, path), reload=reload),weights_only=False)
+        if "safe_tensor" in kwargs and kwargs["safe_tensor"]==True:
+            import safetensors.torch
+            import pickle
+            state_dict = safetensors.torch.load_file(path if os.path.exists(path) else download(supar.MODEL[src].get(path, path), reload=reload))
+            state = pickle.loads(state_dict.pop('esupar.config').numpy().tobytes())
+            state['state_dict'] = state_dict
+        else:
+            state = torch.load(path if os.path.exists(path) else download(supar.MODEL[src].get(path, path), reload=reload),weights_only=False)
         cls = supar.PARSER[state['name']] if cls.NAME is None else cls
         args = state['args'].update(args)
         model = cls.MODEL(**args)

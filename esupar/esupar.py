@@ -57,11 +57,21 @@ class Esupar(object):
       except:
         pass
     self.tagger=AutoModelForTokenClassification.from_pretrained(model)
-    f=os.path.join(model,"supar.model")
+    f=os.path.join(model,"esupar.model")
     if os.path.isfile(f):
-      self.parser=Parser.load(f)
+      self.parser=Parser.load(f,safe_tensor=True)
     else:
-      self.parser=Parser.load(cached_file(model,"supar.model"))
+      try:
+        f=cached_file(model,"esupar.model")
+        self.parser=Parser.load(f,safe_tensor=True)
+      except:
+        f=None
+    if not f:
+      f=os.path.join(model,"supar.model")
+      if os.path.isfile(f):
+        self.parser=Parser.load(f)
+      else:
+        self.parser=Parser.load(cached_file(model,"supar.model"))
     try:
       for x in self.parser.transform.flattened_fields:
         if x.fn:
