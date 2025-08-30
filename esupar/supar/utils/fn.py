@@ -152,7 +152,7 @@ def pad(tensors, padding_value=0, total_length=None, padding_side='right'):
         size[1] = total_length
     out_tensor = tensors[0].data.new(*size).fill_(padding_value)
     for i, tensor in enumerate(tensors):
-        out_tensor[i][[slice(-i, None) if padding_side == 'left' else slice(0, i) for i in tensor.size()]] = tensor
+        out_tensor[i][tuple([slice(-i, None) if padding_side == 'left' else slice(0, i) for i in tensor.size()])] = tensor
     return out_tensor
 
 

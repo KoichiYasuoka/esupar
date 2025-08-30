@@ -3,10 +3,6 @@
 import torch
 import torch.nn as nn
 from esupar.supar.modules.dropout import SharedDropout
-try:
-    from torch.nn.modules.rnn import apply_permutation
-except:
-    apply_permutation = lambda tensor,permutation,dim=1: tensor.index_select(dim, permutation)
 from torch.nn.utils.rnn import PackedSequence, pack_padded_sequence
 
 
@@ -152,10 +148,7 @@ class VariationalLSTM(nn.Module):
     def permute_hidden(self, hx, permutation):
         if permutation is None:
             return hx
-        h = apply_permutation(hx[0], permutation)
-        c = apply_permutation(hx[1], permutation)
-
-        return h, c
+        return hx[0].index_select(1, permutation), hx[1].index_select(1, permutation)
 
     def layer_forward(self, x, hx, cell, batch_sizes, reverse=False):
         hx_0 = hx_i = hx
