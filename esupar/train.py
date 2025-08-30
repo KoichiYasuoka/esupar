@@ -269,7 +269,7 @@ if __name__=="__main__":
       a,b,c=makeupos(d,batch)
       subprocess.check_output([sys.executable,"-m","esupar.train",sys.argv[2],sys.argv[2],str(batch),"///",a,b,c])
   elif len(sys.argv)==8 and sys.argv[4]=="///":
-    import torch
+    import torch,pickle,safetensors.torch
     from transformers import AutoTokenizer
     p=["esupar-biaffine","train","-c","biaffine-dep-en","-b"]
     if torch.cuda.is_available():
@@ -277,6 +277,10 @@ if __name__=="__main__":
     tokenizer=AutoTokenizer.from_pretrained(sys.argv[1])
     p+=["-p",os.path.join(sys.argv[2],"supar.model"),"-f","bert","--bert",sys.argv[1],"--embed=","--unk",tokenizer.unk_token,"--buckets",sys.argv[3],"--train",sys.argv[5],"--dev",sys.argv[6],"--test",sys.argv[7]]
     subprocess.check_output(p)
+    s=torch.load(os.path.join(sys.argv[2],"supar.model"),weights_only=False)
+    d=s.pop("state_dict")
+    d["esupar.config"]=torch.tensor([c for c in pickle.dumps(s)],dtype=torch.uint8)
+    safetensors.torch.save_file(d,os.path.join(sys.argv[2],"esupar.model"))
   elif len(sys.argv)>5 and sys.argv[3].isdecimal():
     trainer(UPOSDataset)
   elif len(sys.argv)>5 and sys.argv[3].startswith("-"):
