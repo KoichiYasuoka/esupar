@@ -18,6 +18,14 @@ from torch.optim import Adam
 from torch.optim.lr_scheduler import ExponentialLR
 
 
+class EsuparUnpickler(dill.Unpickler):
+    def find_class(self, module, name):
+        from pickle import Unpickler
+        if module.startswith("supar"):
+            module = "esupar." + module
+        return Unpickler.find_class(self, module, name)
+
+
 class Parser(object):
 
     NAME = None
@@ -191,14 +199,18 @@ class Parser(object):
 
         args = Config(**locals())
         args.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        if not os.path.exists(path):
+            path = download(supar.MODEL[src].get(path, path), reload=reload)
         if "safe_tensor" in kwargs and kwargs["safe_tensor"]==True:
             import safetensors.torch
             import pickle
-            state_dict = safetensors.torch.load_file(path if os.path.exists(path) else download(supar.MODEL[src].get(path, path), reload=reload))
+            state_dict = safetensors.torch.load_file(path)
             state = pickle.loads(state_dict.pop('esupar.config').numpy().tobytes())
             state['state_dict'] = state_dict
         else:
-            state = torch.load(path if os.path.exists(path) else download(supar.MODEL[src].get(path, path), reload=reload),weights_only=False)
+            import dill as esupar_dill
+            esupar_dill.Unpickler = EsuparUnpickler
+            state = torch.load(path, pickle_module=esupar_dill, weights_only=False)
         cls = supar.PARSER[state['name']] if cls.NAME is None else cls
         args = state['args'].update(args)
         model = cls.MODEL(**args)
