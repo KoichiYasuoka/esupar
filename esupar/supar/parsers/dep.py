@@ -1073,3 +1073,6 @@ class VIDependencyParser(BiaffineDependencyParser):
         preds['rels'] = [self.REL.vocab[seq.tolist()] for seq in preds['rels']]
 
         return preds
+
+def addprefixspace(x):
+    return ' '+x
