@@ -279,7 +279,13 @@ if __name__=="__main__":
     subprocess.check_output(p)
     s=torch.load(os.path.join(sys.argv[2],"supar.model"),weights_only=False)
     d=s.pop("state_dict")
-    d["esupar.config"]=torch.tensor([c for c in pickle.dumps(s)],dtype=torch.uint8)
+    try:
+      w=[c for c in pickle.dumps(s)]
+    except:
+      from esupar.supar.parsers.dep import addprefixspace
+      s["transform"].flattened_fields[2].fn=addprefixspace
+      w=[c for c in pickle.dumps(s)]
+    d["esupar.config"]=torch.tensor(w,dtype=torch.uint8)
     safetensors.torch.save_file(d,os.path.join(sys.argv[2],"esupar.model"))
   elif len(sys.argv)>5 and sys.argv[3].isdecimal():
     trainer(UPOSDataset)
