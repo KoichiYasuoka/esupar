@@ -47,7 +47,10 @@ class Esupar(object):
       from transformers.file_utils import cached_path,hf_bucket_url
       cached_file=lambda x,y:cached_path(hf_bucket_url(x,y))
     self.tokenizer=AutoTokenizer.from_pretrained(model)
-    self.tokenizerfast=(str(type(self.tokenizer)).find("TokenizerFast")>0)
+    try:
+      self.tokenizerfast=self.tokenizer.is_fast
+    except:
+      self.tokenizerfast=(str(type(self.tokenizer)).find("TokenizerFast")>0)
     if not self.tokenizerfast:
       try:
         if self.tokenizer.word_tokenizer_type=="mecab":
